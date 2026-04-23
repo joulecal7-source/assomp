@@ -455,7 +455,6 @@
             'CHEF001': { password: '1234', name: 'Pierre Rousseau', role: 'chef' }
         },
         beneficiaries: [
-            // ÉTAGE 2
             { id: 'B001', name: 'Patient 201', bed: '201', floor: 2, roomType: 'simple' },
             { id: 'B002', name: 'Patient 202', bed: '202', floor: 2, roomType: 'simple' },
             { id: 'B003', name: 'Patient 203', bed: '203', floor: 2, roomType: 'simple' },
@@ -494,7 +493,6 @@
             { id: 'B036', name: 'Patient 2023A', bed: '2023A', floor: 2, roomType: 'double' },
             { id: 'B037', name: 'Patient 2023B', bed: '2023B', floor: 2, roomType: 'double' },
             
-            // ÉTAGE 3
             { id: 'B038', name: 'Patient 301', bed: '301', floor: 3, roomType: 'simple' },
             { id: 'B039', name: 'Patient 302', bed: '302', floor: 3, roomType: 'simple' },
             { id: 'B040', name: 'Patient 303', bed: '303', floor: 3, roomType: 'simple' },
@@ -565,7 +563,6 @@
     function saveToStorage(key, value) {
         try {
             localStorage.setItem(key, JSON.stringify(value));
-            console.log('✅ Saved:', key);
         } catch (e) {
             console.error('Storage error:', e);
         }
@@ -632,11 +629,17 @@
     // ===== PREPOSE VIEW =====
     function initPreposeView() {
         const navMenu = document.getElementById('navMenu');
-        navMenu.innerHTML = '<div class="nav-item active">📋 Mes Soins</div>';
+        navMenu.innerHTML = '<div class="nav-item active" onclick="showPreposeePage()">📋 Mes Soins</div>';
         
         document.getElementById('userName').textContent = currentUser.name;
+        showPreposeePage();
         renderShiftSelector();
         renderBeneficiaries();
+    }
+
+    function showPreposeePage() {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('preposeShiftPage').classList.add('active');
     }
 
     function renderShiftSelector() {
@@ -760,12 +763,12 @@
         navMenu.innerHTML = '<div class="nav-item active">📊 Tableau de Bord</div>';
         
         document.getElementById('chefName').textContent = currentUser.name;
+        showChefPage();
     }
 
-    // ===== PAGE NAVIGATION =====
-    function showPage(pageId) {
+    function showChefPage() {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
+        document.getElementById('chefDashboardPage').classList.add('active');
     }
 
     // ===== INIT =====
