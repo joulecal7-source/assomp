@@ -89,15 +89,6 @@
             color: white;
         }
 
-        .btn-secondary {
-            background: #6b7280;
-            color: white;
-            padding: 10px 15px;
-            font-size: 13px;
-            width: auto;
-            margin-top: 10px;
-        }
-
         .role-selector {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -291,76 +282,6 @@
             font-weight: 600;
         }
 
-        .care-items {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .care-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: var(--bg-light);
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .care-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--success);
-        }
-
-        .care-item label {
-            cursor: pointer;
-            font-size: 14px;
-            flex: 1;
-            user-select: none;
-        }
-
-        .care-item input[type="checkbox"]:checked + label {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .notes-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-        }
-
-        .notes-label {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .notes-textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 12px;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 70px;
-        }
-
-        .notes-textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .save-status {
-            margin-top: 10px;
-            font-size: 12px;
-            color: var(--success);
-        }
-
         /* MODAL PROFIL */
         .modal {
             display: none;
@@ -384,7 +305,7 @@
             padding: 30px;
             border-radius: 12px;
             width: 90%;
-            max-width: 600px;
+            max-width: 650px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
@@ -392,7 +313,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 2px solid var(--border);
         }
@@ -412,7 +333,29 @@
             color: var(--text-dark);
         }
 
-        .care-requirement {
+        /* SECTIONS */
+        .care-section {
+            margin-bottom: 30px;
+        }
+
+        .care-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .section-admin {
+            background: #ef4444;
+        }
+
+        .section-prepose {
+            background: #10b981;
+        }
+
+        .care-item {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -422,22 +365,34 @@
             margin-bottom: 10px;
         }
 
-        .care-requirement input[type="checkbox"] {
+        .care-item input[type="checkbox"] {
             width: 24px;
             height: 24px;
-            cursor: default;
+            cursor: pointer;
+            accent-color: var(--success);
         }
 
-        .care-requirement input[type="checkbox"]:disabled {
+        .care-item input[type="checkbox"]:disabled {
             opacity: 1;
             cursor: not-allowed;
         }
 
-        .care-requirement label {
-            cursor: default;
+        .care-item label {
+            cursor: pointer;
             font-size: 14px;
             flex: 1;
             user-select: none;
+        }
+
+        .care-item input[type="checkbox"]:disabled + label {
+            cursor: not-allowed;
+            font-weight: 600;
+            color: var(--danger);
+        }
+
+        .care-item input[type="checkbox"]:checked + label {
+            color: var(--success);
+            font-weight: 600;
         }
 
         /* RAPPORTS */
@@ -916,31 +871,61 @@
         }).join('');
     }
 
-    // ===== PROFIL MODAL =====
+    // ===== PROFIL MODAL - PREPOSE =====
     let currentProfilePatient = null;
 
     function openProfileModal(benefId) {
         currentProfilePatient = database.beneficiaries.find(b => b.id === benefId);
-        const requirements = getFromStorage(`patient_${benefId}`) || {};
+        const adminRequirements = getFromStorage(`patient_admin_${benefId}`) || {};
+        const preposeVerification = getFromStorage(`patient_prepose_${benefId}_${currentShift}`) || {};
 
         document.getElementById('modalPatientName').textContent = currentProfilePatient.name;
         document.getElementById('modalPatientInfo').textContent = `Lit: ${currentProfilePatient.bed} | Étage ${currentProfilePatient.floor}`;
 
         const careItems = document.getElementById('modalCareItems');
-        careItems.innerHTML = '<h3 style="margin-bottom: 15px;">Soins & Équipements à Vérifier:</h3>' +
-            database.careRequirements.map(care => `
-                <div class="care-requirement">
-                    <input type="checkbox" 
-                           id="care_${benefId}_${care.id}"
-                           ${requirements[care.id] ? 'checked' : ''}
-                           disabled>
-                    <label for="care_${benefId}_${care.id}">
-                        ${care.icon} ${care.name}
-                    </label>
-                </div>
-            `).join('');
+        
+        // SECTION ADMIN (Lecture seule)
+        let html = '<div class="care-section">';
+        html += '<div class="care-section-title section-admin">🔴 À VÉRIFIER (Configuration Admin)</div>';
+        html += database.careRequirements.map(care => `
+            <div class="care-item">
+                <input type="checkbox" 
+                       id="admin_care_${benefId}_${care.id}"
+                       ${adminRequirements[care.id] ? 'checked' : ''}
+                       disabled>
+                <label for="admin_care_${benefId}_${care.id}">
+                    ${care.icon} ${care.name}
+                </label>
+            </div>
+        `).join('');
+        html += '</div>';
 
+        // SECTION PREPOSE (Cases à cocher)
+        html += '<div class="care-section">';
+        html += '<div class="care-section-title section-prepose">✅ SOINS COMPLÉTÉS (Cochez après avoir vérifié)</div>';
+        html += database.careRequirements.map(care => `
+            <div class="care-item">
+                <input type="checkbox" 
+                       id="prepose_care_${benefId}_${care.id}"
+                       ${preposeVerification[care.id] ? 'checked' : ''}
+                       onchange="updatePreposeVerification('${benefId}', ${care.id})">
+                <label for="prepose_care_${benefId}_${care.id}">
+                    ${care.icon} ${care.name}
+                </label>
+            </div>
+        `).join('');
+        html += '</div>';
+
+        careItems.innerHTML = html;
         document.getElementById('profileModal').classList.add('active');
+    }
+
+    function updatePreposeVerification(benefId, careId) {
+        const checkbox = document.getElementById(`prepose_care_${benefId}_${careId}`);
+        const verification = getFromStorage(`patient_prepose_${benefId}_${currentShift}`) || {};
+        
+        verification[careId] = checkbox.checked;
+        saveToStorage(`patient_prepose_${benefId}_${currentShift}`, verification);
     }
 
     function closeProfileModal() {
@@ -1039,34 +1024,34 @@
 
     function openAdminProfileModal(benefId) {
         currentProfilePatient = database.beneficiaries.find(b => b.id === benefId);
-        const requirements = getFromStorage(`patient_${benefId}`) || {};
+        const requirements = getFromStorage(`patient_admin_${benefId}`) || {};
 
         document.getElementById('modalPatientName').textContent = currentProfilePatient.name + ' (Configuration)';
         document.getElementById('modalPatientInfo').textContent = `Lit: ${currentProfilePatient.bed} | Étage ${currentProfilePatient.floor}`;
 
         const careItems = document.getElementById('modalCareItems');
-        careItems.innerHTML = '<h3 style="margin-bottom: 15px;">Cocher les soins & équipements requis:</h3>' +
+        careItems.innerHTML = '<div class="care-section"><div class="care-section-title section-admin">Cocher les soins & équipements requis:</div>' +
             database.careRequirements.map(care => `
-                <div class="care-requirement">
+                <div class="care-item">
                     <input type="checkbox" 
-                           id="care_${benefId}_${care.id}"
+                           id="admin_config_${benefId}_${care.id}"
                            ${requirements[care.id] ? 'checked' : ''}
                            onchange="updateAdminRequirement('${benefId}', ${care.id})">
-                    <label for="care_${benefId}_${care.id}">
+                    <label for="admin_config_${benefId}_${care.id}">
                         ${care.icon} ${care.name}
                     </label>
                 </div>
-            `).join('');
+            `).join('') + '</div>';
 
         document.getElementById('profileModal').classList.add('active');
     }
 
     function updateAdminRequirement(benefId, careId) {
-        const checkbox = document.getElementById(`care_${benefId}_${careId}`);
-        const requirements = getFromStorage(`patient_${benefId}`) || {};
+        const checkbox = document.getElementById(`admin_config_${benefId}_${careId}`);
+        const requirements = getFromStorage(`patient_admin_${benefId}`) || {};
         
         requirements[careId] = checkbox.checked;
-        saveToStorage(`patient_${benefId}`, requirements);
+        saveToStorage(`patient_admin_${benefId}`, requirements);
     }
 
     // ===== INIT =====
@@ -1074,7 +1059,6 @@
         document.getElementById('userId').focus();
     });
 
-    // Fermer modal en cliquant en dehors
     window.onclick = function(event) {
         const modal = document.getElementById('profileModal');
         if (event.target == modal) {
