@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASSOMP - Système de Suivi des Soins</title>
+    <title>Système de Suivi des Soins - Centre de Personnes Âgées</title>
     <style>
         * {
             margin: 0;
@@ -23,15 +23,17 @@
             --text-light: #64748b;
             --border: #e2e8f0;
             --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             background: var(--bg-light);
             color: var(--text-dark);
             line-height: 1.6;
         }
 
+        /* ===== LOGIN PAGE ===== */
         .login-container {
             display: flex;
             justify-content: center;
@@ -53,6 +55,13 @@
         .login-box h1 {
             font-size: 28px;
             margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        .login-box p {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            font-size: 14px;
         }
 
         .form-group {
@@ -64,14 +73,24 @@
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
+            color: var(--text-dark);
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .btn {
@@ -81,17 +100,25 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            width: 100%;
+            transition: all 0.3s;
+            display: inline-block;
+            text-align: center;
         }
 
         .btn-primary {
             background: var(--primary);
             color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-md);
         }
 
         .role-selector {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 20px;
         }
@@ -103,13 +130,19 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 13px;
+            transition: all 0.3s;
+            color: var(--text-light);
         }
 
         .role-btn.active {
             border-color: var(--primary);
             background: rgba(37, 99, 235, 0.05);
             color: var(--primary);
+        }
+
+        /* ===== DASHBOARD & MAIN LAYOUT ===== */
+        .hidden {
+            display: none;
         }
 
         .app-container {
@@ -122,6 +155,7 @@
             background: var(--text-dark);
             color: white;
             padding: 20px;
+            box-shadow: var(--shadow-md);
             overflow-y: auto;
         }
 
@@ -140,7 +174,12 @@
             margin-bottom: 8px;
             border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s;
             font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
         }
 
         .nav-item.active {
@@ -158,6 +197,11 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
         }
 
         .main-content {
@@ -171,9 +215,19 @@
 
         .page.active {
             display: block;
+            animation: fadeIn 0.3s;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== HEADER ===== */
         .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid var(--border);
@@ -181,8 +235,22 @@
 
         .page-header h2 {
             font-size: 28px;
+            color: var(--text-dark);
         }
 
+        .user-info {
+            font-size: 14px;
+            color: var(--text-light);
+            text-align: right;
+        }
+
+        .user-info strong {
+            color: var(--text-dark);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ===== SHIFT SELECTOR ===== */
         .shift-selector {
             display: flex;
             gap: 10px;
@@ -197,6 +265,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.3s;
             font-size: 14px;
         }
 
@@ -206,18 +275,12 @@
             border-color: var(--primary);
         }
 
-        .floor-filter {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-        }
-
+        /* ===== BENEFICIARY CARD ===== */
         .beneficiaries-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
+            margin-bottom: 30px;
         }
 
         .beneficiary-card {
@@ -226,42 +289,31 @@
             padding: 20px;
             box-shadow: var(--shadow);
             border-left: 4px solid var(--primary);
-            cursor: pointer;
             transition: all 0.3s;
         }
 
         .beneficiary-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-md);
             transform: translateY(-2px);
         }
 
         .beneficiary-header {
             display: flex;
             justify-content: space-between;
+            align-items: start;
             margin-bottom: 15px;
-            align-items: flex-start;
-        }
-
-        .beneficiary-info {
-            flex: 1;
         }
 
         .beneficiary-name {
             font-size: 18px;
             font-weight: 700;
+            color: var(--text-dark);
         }
 
         .beneficiary-id {
             font-size: 12px;
             color: var(--text-light);
             margin-top: 4px;
-        }
-
-        .bed-info {
-            display: flex;
-            gap: 8px;
-            flex-direction: column;
-            align-items: flex-end;
         }
 
         .bed-number {
@@ -273,121 +325,33 @@
             font-weight: 600;
         }
 
-        .floor-badge {
-            background: #667eea;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* MODAL PROFIL */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            overflow-y: auto;
-        }
-
-        .modal.active {
-            display: block;
-        }
-
-        .modal-content {
-            background: white;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 650px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        .modal-header {
+        /* ===== CARE ITEMS ===== */
+        .care-items {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .modal-header h2 {
-            font-size: 22px;
-        }
-
-        .close-btn {
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            color: var(--text-light);
-        }
-
-        .close-btn:hover {
-            color: var(--text-dark);
-        }
-
-        /* SECTIONS */
-        .care-section {
-            margin-bottom: 30px;
-        }
-
-        .care-section-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            padding: 12px;
-            border-radius: 8px;
-            color: white;
-        }
-
-        .section-admin {
-            background: #ef4444;
-        }
-
-        .section-prepose {
-            background: #10b981;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .care-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
+            gap: 10px;
+            padding: 10px;
             background: var(--bg-light);
-            border-radius: 8px;
-            margin-bottom: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .care-item:hover {
+            background: #eff6ff;
         }
 
         .care-item input[type="checkbox"] {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
             accent-color: var(--success);
-        }
-
-        .care-item input[type="checkbox"]:disabled {
-            opacity: 1;
-            cursor: not-allowed;
-        }
-
-        .care-item label {
-            cursor: pointer;
-            font-size: 14px;
-            flex: 1;
-            user-select: none;
-        }
-
-        .care-item input[type="checkbox"]:disabled + label {
-            cursor: not-allowed;
-            font-weight: 600;
-            color: var(--danger);
         }
 
         .care-item input[type="checkbox"]:checked + label {
@@ -395,235 +359,486 @@
             font-weight: 600;
         }
 
-        /* RAPPORTS */
-        .reports-section {
+        .care-item label {
+            cursor: pointer;
+            font-size: 14px;
+            flex: 1;
+            transition: all 0.2s;
+        }
+
+        .care-time {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* ===== NOTES SECTION ===== */
+        .notes-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .notes-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 70px;
+            transition: border-color 0.3s;
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* ===== DASHBOARD FOR CHIEFS ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
             background: white;
             padding: 20px;
             border-radius: 12px;
             box-shadow: var(--shadow);
-            margin-bottom: 20px;
+            border-top: 4px solid var(--primary);
         }
 
-        .report-item {
-            padding: 15px;
-            background: #fef3c7;
-            border-left: 4px solid var(--warning);
-            border-radius: 6px;
-            margin-bottom: 10px;
-        }
-
-        .report-time {
-            font-size: 12px;
-            color: var(--text-light);
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
             margin-bottom: 5px;
         }
 
-        .report-text {
+        .stat-label {
             font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* ===== REPORT TABLE ===== */
+        .report-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .report-section h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
             color: var(--text-dark);
         }
 
-        .add-report-form {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
         }
 
-        .add-report-form input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
+        table th {
+            background: var(--bg-light);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--border);
         }
 
-        .add-report-form button {
-            padding: 10px 20px;
-            background: var(--warning);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
         }
 
-        .hidden {
-            display: none;
+        .status-complete {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success);
         }
 
+        .status-incomplete {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+        }
+
+        .status-partial {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        /* ===== BUTTONS & ACTIONS ===== */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-print {
+            background: #0f766e;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background: #0d5d5a;
+        }
+
+        .btn-export {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #6d28d9;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .app-container {
                 grid-template-columns: 1fr;
             }
+
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                top: 0;
+                height: 100vh;
+                z-index: 100;
+                transition: left 0.3s;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
             .beneficiaries-grid {
                 grid-template-columns: 1fr;
             }
-            .modal-content {
-                width: 95%;
-                margin: 20% auto;
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
             }
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .sidebar,
+            .action-buttons,
+            .logout-btn {
+                display: none;
+            }
+
+            .beneficiary-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .report-section {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .error-message {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ===== LOGIN PAGE ===== -->
 <div id="loginPage" class="login-container">
     <div class="login-box">
-        <h1>🏥 ASSOMP</h1>
-        <p style="color: var(--text-light); margin-bottom: 30px; font-size: 14px;">Système de Suivi des Soins</p>
+        <h1>🏥 Centre de Soins</h1>
+        <p>Système de Suivi des Soins</p>
+
+        <div class="error-message" id="loginError"></div>
 
         <label style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px;">Rôle:</label>
         <div class="role-selector">
             <div class="role-btn active" onclick="selectRole('prepose')">👤 Préposé</div>
-            <div class="role-btn" onclick="selectRole('infirmiere')">👩‍⚕️ Infirmière</div>
-            <div class="role-btn" onclick="selectRole('admin')">👨‍💼 Admin</div>
+            <div class="role-btn" onclick="selectRole('chef')">👨‍💼 Chef</div>
         </div>
 
         <div class="form-group">
-            <label>ID Utilisateur</label>
-            <input type="text" id="userId" placeholder="PREP001">
+            <label>ID Utilisateur / Numéro d'Employé</label>
+            <input type="text" id="userId" placeholder="Ex: PREP001">
         </div>
 
         <div class="form-group">
             <label>Mot de passe</label>
-            <input type="password" id="password" placeholder="1234">
+            <input type="password" id="password" placeholder="Entrez votre mot de passe">
         </div>
 
         <button class="btn btn-primary" onclick="login()">Connexion</button>
 
         <p style="margin-top: 20px; font-size: 12px; color: var(--text-light); text-align: center;">
-            <strong>Identifiants:</strong><br>
-            Préposé: PREP001 / 1234<br>
-            Infirmière: INF001 / 1234<br>
-            Admin: ADMIN001 / 1234
+            <strong>Demo:</strong><br>
+            Préposé: ID=PREP001, PW=1234<br>
+            Chef: ID=CHEF001, PW=1234
         </p>
     </div>
 </div>
 
-<!-- APP -->
+<!-- ===== APP CONTAINER ===== -->
 <div id="appContainer" class="app-container hidden">
+    <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-logo">🏥 ASSOMP</div>
+        <div class="sidebar-logo">🏥 Centre</div>
         <div id="navMenu"></div>
         <button class="logout-btn" onclick="logout()">Déconnexion</button>
     </div>
 
+    <!-- Main Content -->
     <div class="main-content">
-        <!-- PREPOSE -->
+        <!-- PREPOSE PAGES -->
         <div id="preposeShiftPage" class="page">
             <div class="page-header">
-                <h2>📋 Enregistrement des Soins</h2>
-                <div style="font-size: 14px; color: var(--text-light);">
-                    <strong id="userName"></strong><br>
+                <h2>Enregistrement des Soins</h2>
+                <div class="user-info">
+                    <strong id="userName"></strong>
                     <span id="userShift"></span>
                 </div>
             </div>
 
-            <div id="reportsDisplay" class="reports-section"></div>
-
             <div class="shift-selector" id="shiftSelector"></div>
 
-            <div class="floor-filter">
-                <label>🏢 Filtrer par Étage:</label>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-                    <button class="shift-btn active" onclick="filterFloor('all')">📋 Tous</button>
-                    <button class="shift-btn" onclick="filterFloor(2)">🏢 Étage 2</button>
-                    <button class="shift-btn" onclick="filterFloor(3)">🏢 Étage 3</button>
+            <div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; box-shadow: var(--shadow);">
+                <label style="font-weight: 600; color: var(--text-dark); margin-bottom: 10px; display: block;">🏢 Filtrer par Étage:</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="shift-btn active" onclick="filterFloor('all')" style="padding: 8px 16px; font-size: 13px;">📋 Tous les Étages</button>
+                    <button class="shift-btn" onclick="filterFloor(2)" style="padding: 8px 16px; font-size: 13px;">🏢 Étage 2</button>
+                    <button class="shift-btn" onclick="filterFloor(3)" style="padding: 8px 16px; font-size: 13px;">🏢 Étage 3</button>
                 </div>
             </div>
 
             <div class="beneficiaries-grid" id="beneficiariesGrid"></div>
         </div>
 
-        <!-- INFIRMIERE -->
-        <div id="infirmiereReportsPage" class="page">
+        <!-- CHEF DASHBOARD -->
+        <div id="chefDashboardPage" class="page">
             <div class="page-header">
-                <h2>📝 Rapports Importants</h2>
-                <div style="font-size: 14px; color: var(--text-light);">
-                    <strong id="infirmiereName"></strong>
+                <h2>Tableau de Bord</h2>
+                <div class="user-info">
+                    <strong id="chefName"></strong>
+                    <span>Chef de Quart</span>
                 </div>
             </div>
 
-            <div class="reports-section">
-                <h3 style="margin-bottom: 15px;">➕ Ajouter un Rapport</h3>
-                <div class="add-report-form">
-                    <input type="text" id="reportInput" placeholder="Ex: Patient A tombé à 20h | Caches nez chambre 202 | ...">
-                    <button onclick="addReport()">Envoyer</button>
-                </div>
-                <div id="allReports" style="margin-top: 20px;"></div>
+            <div class="dashboard-grid" id="dashboardStats"></div>
+
+            <div class="action-buttons">
+                <button class="btn btn-print" onclick="printReport()">🖨️ Imprimer le Rapport</button>
+                <button class="btn btn-export" onclick="exportToCSV()">📥 Exporter CSV</button>
+            </div>
+
+            <div class="report-section">
+                <h3>Synthèse des Soins - Aujourd'hui</h3>
+                <div id="dashboardReport"></div>
             </div>
         </div>
 
-        <!-- ADMIN -->
-        <div id="adminPage" class="page">
+        <!-- CHEF DETAILED REPORT -->
+        <div id="chefReportPage" class="page">
             <div class="page-header">
-                <h2>⚙️ Configuration Patients</h2>
-                <div style="font-size: 14px; color: var(--text-light);">
-                    <strong id="adminName"></strong>
+                <h2>Rapports Détaillés</h2>
+            </div>
+
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="date" id="reportDate" style="padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                <button class="btn btn-primary" onclick="generateDetailedReport()">Générer Rapport</button>
+            </div>
+
+            <div class="report-section">
+                <div id="detailedReportContent"></div>
+            </div>
+        </div>
+
+        <!-- CHEF ADMINISTRATION -->
+        <div id="chefAdminPage" class="page">
+            <div class="page-header">
+                <h2>Administration</h2>
+            </div>
+
+            <div class="report-section">
+                <h3>Gestion des Préposés</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Quart</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="preposeTable"></tbody>
+                </table>
+            </div>
+
+            <div class="report-section" style="margin-top: 20px;">
+                <h3>Ajouter un Préposé</h3>
+                <div class="form-group">
+                    <label>ID Préposé</label>
+                    <input type="text" id="newPreposeId" placeholder="Ex: PREP002">
                 </div>
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" id="newPreposeNom" placeholder="Nom complet">
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="newPreposePassword" placeholder="Mot de passe">
+                </div>
+                <button class="btn btn-success" onclick="addNewPrepose()">Ajouter Préposé</button>
             </div>
-
-            <div id="adminGrid" class="beneficiaries-grid"></div>
         </div>
-    </div>
-</div>
-
-<!-- MODAL PROFIL PATIENT -->
-<div id="profileModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <div>
-                <h2 id="modalPatientName"></h2>
-                <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;" id="modalPatientInfo"></p>
-            </div>
-            <span class="close-btn" onclick="closeProfileModal()">&times;</span>
-        </div>
-        <div id="modalCareItems"></div>
     </div>
 </div>
 
 <script>
-    // ===== VARIABLES GLOBALES =====
+    // ===== DATA STORAGE =====
     let currentUser = null;
     let currentShift = 'matin';
     let currentFloor = 'all';
-    let selectedRole = 'prepose';
 
-    // ===== DATABASE =====
-    const database = {
+    // Simulated database (in production, use a real backend)
+    let database = {
         users: {
             'PREP001': { password: '1234', name: 'Marie Dupont', role: 'prepose' },
             'PREP002': { password: '1234', name: 'Jean Martin', role: 'prepose' },
-            'INF001': { password: '1234', name: 'Sophie Bernard', role: 'infirmiere' },
-            'ADMIN001': { password: '1234', name: 'Pierre Rousseau', role: 'admin' }
+            'PREP003': { password: '1234', name: 'Sophie Leclerc', role: 'prepose' },
+            'CHEF001': { password: '1234', name: 'Pierre Rousseau', role: 'chef' }
         },
-        careRequirements: [
-            { id: 1, name: 'Porte dentier', icon: '🦷' },
-            { id: 2, name: 'Porte appareils auditifs', icon: '👂' },
-            { id: 3, name: 'Porte lunettes', icon: '👓' },
-            { id: 4, name: 'Utilise marchette', icon: '🚶' },
-            { id: 5, name: 'Utilise chaise roulante', icon: '♿' },
-            { id: 6, name: 'Se déplace en pivot', icon: '🔄' },
-            { id: 7, name: 'Se déplace avec lève-personnes', icon: '🏋️' },
-            { id: 8, name: 'Se déplace avec Sara', icon: '🪑' },
-            { id: 9, name: 'Marche', icon: '🚶' },
-            { id: 10, name: 'Mange seul', icon: '🍴' },
-            { id: 11, name: 'Aide à manger', icon: '🥄' },
-            { id: 12, name: 'Liquide miel', icon: '🍯' },
-            { id: 13, name: 'Liquide nectar', icon: '🧃' },
-            { id: 14, name: 'Diète purée', icon: '🥣' },
-            { id: 15, name: 'Diète normale', icon: '🍽️' },
-            { id: 16, name: 'Ceinture de marche', icon: '🎽' },
-            { id: 17, name: 'Tags sur fauteuil', icon: '🏷️' },
-            { id: 18, name: 'Tags au lit', icon: '🏷️' }
-        ],
         beneficiaries: [
+            // 🏢 ÉTAGE 2 (Lits 201-2023, sauf 2012 et 2013) - Total: 39 lits
+            // Chambres simples (1 lit): 201-205
             { id: 'B001', name: 'Patient 201', bed: '201', floor: 2, roomType: 'simple' },
             { id: 'B002', name: 'Patient 202', bed: '202', floor: 2, roomType: 'simple' },
             { id: 'B003', name: 'Patient 203', bed: '203', floor: 2, roomType: 'simple' },
             { id: 'B004', name: 'Patient 204', bed: '204', floor: 2, roomType: 'simple' },
             { id: 'B005', name: 'Patient 205', bed: '205', floor: 2, roomType: 'simple' },
+            // Chambres doubles: 206-2023 (sauf 2012, 2013)
             { id: 'B006', name: 'Patient 206A', bed: '206A', floor: 2, roomType: 'double' },
             { id: 'B007', name: 'Patient 206B', bed: '206B', floor: 2, roomType: 'double' },
             { id: 'B008', name: 'Patient 207A', bed: '207A', floor: 2, roomType: 'double' },
@@ -636,6 +851,7 @@
             { id: 'B015', name: 'Patient 210B', bed: '210B', floor: 2, roomType: 'double' },
             { id: 'B016', name: 'Patient 211A', bed: '211A', floor: 2, roomType: 'double' },
             { id: 'B017', name: 'Patient 211B', bed: '211B', floor: 2, roomType: 'double' },
+            // 2012 et 2013 INEXISTANTS - SAUTÉ
             { id: 'B018', name: 'Patient 2014A', bed: '2014A', floor: 2, roomType: 'double' },
             { id: 'B019', name: 'Patient 2014B', bed: '2014B', floor: 2, roomType: 'double' },
             { id: 'B020', name: 'Patient 2015A', bed: '2015A', floor: 2, roomType: 'double' },
@@ -656,11 +872,15 @@
             { id: 'B035', name: 'Patient 2022B', bed: '2022B', floor: 2, roomType: 'double' },
             { id: 'B036', name: 'Patient 2023A', bed: '2023A', floor: 2, roomType: 'double' },
             { id: 'B037', name: 'Patient 2023B', bed: '2023B', floor: 2, roomType: 'double' },
+            
+            // 🏢 ÉTAGE 3 (Lits 300-3027, sauf 3026) - Total: 51 lits
+            // Chambres simples (1 lit): 301-305
             { id: 'B038', name: 'Patient 301', bed: '301', floor: 3, roomType: 'simple' },
             { id: 'B039', name: 'Patient 302', bed: '302', floor: 3, roomType: 'simple' },
             { id: 'B040', name: 'Patient 303', bed: '303', floor: 3, roomType: 'simple' },
             { id: 'B041', name: 'Patient 304', bed: '304', floor: 3, roomType: 'simple' },
             { id: 'B042', name: 'Patient 305', bed: '305', floor: 3, roomType: 'simple' },
+            // Chambres doubles: 306-3027 (sauf 3026)
             { id: 'B043', name: 'Patient 306A', bed: '306A', floor: 3, roomType: 'double' },
             { id: 'B044', name: 'Patient 306B', bed: '306B', floor: 3, roomType: 'double' },
             { id: 'B045', name: 'Patient 307A', bed: '307A', floor: 3, roomType: 'double' },
@@ -701,36 +921,32 @@
             { id: 'B080', name: 'Patient 324B', bed: '324B', floor: 3, roomType: 'double' },
             { id: 'B081', name: 'Patient 325A', bed: '325A', floor: 3, roomType: 'double' },
             { id: 'B082', name: 'Patient 325B', bed: '325B', floor: 3, roomType: 'double' },
+            // 3026 INEXISTANT - SAUTÉ
             { id: 'B083', name: 'Patient 3027A', bed: '3027A', floor: 3, roomType: 'double' },
             { id: 'B084', name: 'Patient 3027B', bed: '3027B', floor: 3, roomType: 'double' }
+        ],
+        careTypes: [
+            { id: 1, name: 'Besoin d\'élimination', icon: '🚽' },
+            { id: 2, name: 'Besoin de manger', icon: '🍽️' },
+            { id: 3, name: 'Bain partiel', icon: '🚿' },
+            { id: 4, name: 'Bain complet', icon: '🛁' },
+            { id: 5, name: 'Changement de culotte', icon: '👕' },
+            { id: 6, name: 'Lavage des fauteuils roulants (nuit)', icon: '♻️' },
+            { id: 7, name: 'Distribution de collations', icon: '🍎' },
+            { id: 8, name: 'Hydratation des patients', icon: '💧' },
+            { id: 9, name: 'Vérification barrières lit/position', icon: '🛏️' }
         ],
         shifts: [
             { id: 'matin', name: 'Matin (06h-14h)' },
             { id: 'midi', name: 'Midi (14h-22h)' },
             { id: 'soir', name: 'Soir (22h-06h)' }
-        ]
+        ],
+        records: {} // Store care records
     };
 
-    // ===== STORAGE =====
-    function saveToStorage(key, value) {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch (e) {
-            console.error('Storage error:', e);
-        }
-    }
+    // ===== AUTHENTICATION =====
+    let selectedRole = 'prepose';
 
-    function getFromStorage(key) {
-        try {
-            const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : null;
-        } catch (e) {
-            console.error('Storage error:', e);
-            return null;
-        }
-    }
-
-    // ===== LOGIN =====
     function selectRole(role) {
         selectedRole = role;
         document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
@@ -740,61 +956,61 @@
     function login() {
         const userId = document.getElementById('userId').value.trim();
         const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('loginError');
 
         if (!userId || !password) {
-            alert('❌ Veuillez entrer votre ID et mot de passe');
+            errorDiv.textContent = '❌ Veuillez entrer votre ID et mot de passe';
+            errorDiv.style.display = 'block';
             return;
         }
 
         const user = database.users[userId];
         if (!user || user.password !== password) {
-            alert('❌ ID ou mot de passe incorrect');
+            errorDiv.textContent = '❌ ID ou mot de passe incorrect';
+            errorDiv.style.display = 'block';
             return;
         }
 
         if (user.role !== selectedRole) {
-            alert('❌ Rôle sélectionné incorrect');
+            errorDiv.textContent = '❌ Rôle sélectionné incorrect';
+            errorDiv.style.display = 'block';
             return;
         }
 
+        // Login successful
         currentUser = { id: userId, ...user };
-        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('loginPage').style.display = 'none';
         document.getElementById('appContainer').classList.remove('hidden');
-
+        
         if (user.role === 'prepose') {
             initPreposeView();
-        } else if (user.role === 'infirmiere') {
-            initInfirmiereView();
-        } else if (user.role === 'admin') {
-            initAdminView();
+        } else {
+            initChefView();
         }
     }
 
     function logout() {
         if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
             currentUser = null;
-            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('loginPage').style.display = 'flex';
             document.getElementById('appContainer').classList.add('hidden');
             document.getElementById('userId').value = '';
             document.getElementById('password').value = '';
         }
     }
 
-    // ===== PREPOSE =====
+    // ===== PREPOSE VIEW =====
     function initPreposeView() {
+        // Build navigation
         const navMenu = document.getElementById('navMenu');
-        navMenu.innerHTML = '<div class="nav-item active" onclick="showPreposeePage()">📋 Mes Soins</div>';
-        
-        document.getElementById('userName').textContent = currentUser.name;
-        showPreposeePage();
-        renderShiftSelector();
-        renderReports();
-        renderBeneficiaries();
-    }
+        navMenu.innerHTML = `
+            <div class="nav-item active" onclick="showPage('preposeShiftPage')">📋 Mes Soins</div>
+        `;
 
-    function showPreposeePage() {
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        document.getElementById('preposeShiftPage').classList.add('active');
+        document.getElementById('userName').textContent = currentUser.name;
+        showPage('preposeShiftPage');
+        renderShiftSelector();
+        renderBeneficiaries();
     }
 
     function renderShiftSelector() {
@@ -814,257 +1030,345 @@
         renderBeneficiaries();
     }
 
-    function updateUserShift() {
-        const shiftName = database.shifts.find(s => s.id === currentShift)?.name || '';
-        document.getElementById('userShift').textContent = shiftName;
-    }
-
     function filterFloor(floor) {
         currentFloor = floor;
-        document.querySelectorAll('.floor-filter .shift-btn').forEach(btn => {
+        // Mettre à jour les boutons actifs
+        document.querySelectorAll('[onclick*="filterFloor"]').forEach(btn => {
             btn.classList.remove('active');
         });
         event.target.classList.add('active');
         renderBeneficiaries();
     }
 
-    function renderReports() {
-        const reportsDiv = document.getElementById('reportsDisplay');
-        const reports = getFromStorage('reports') || [];
-        
-        if (reports.length === 0) {
-            reportsDiv.innerHTML = '<p style="color: var(--text-light); font-size: 14px;">Aucun rapport pour le moment</p>';
-            return;
-        }
-
-        reportsDiv.innerHTML = '<h3 style="margin-bottom: 15px;">📢 Rapports Importants</h3>' + 
-            reports.map(report => `
-                <div class="report-item">
-                    <div class="report-time">${report.time}</div>
-                    <div class="report-text">${report.text}</div>
-                </div>
-            `).join('');
+    function updateUserShift() {
+        const shiftName = database.shifts.find(s => s.id === currentShift)?.name || '';
+        document.getElementById('userShift').textContent = shiftName;
     }
 
     function renderBeneficiaries() {
         const grid = document.getElementById('beneficiariesGrid');
+        
+        // Filtrer par étage
         const beneficiariesToDisplay = currentFloor === 'all' 
             ? database.beneficiaries 
             : database.beneficiaries.filter(b => b.floor === currentFloor);
-
+        
         grid.innerHTML = beneficiariesToDisplay.map(benef => {
+            const recordKey = `${benef.id}_${currentShift}`;
+            const record = database.records[recordKey] || {
+                matin: {}, midi: {}, soir: {}
+            };
+            
+            const currentShiftRecord = record[currentShift] || {};
+
             return `
-                <div class="beneficiary-card" onclick="openProfileModal('${benef.id}')">
+                <div class="beneficiary-card">
                     <div class="beneficiary-header">
-                        <div class="beneficiary-info">
+                        <div>
                             <div class="beneficiary-name">${benef.name}</div>
-                            <div class="beneficiary-id">ID: ${benef.id}</div>
+                            <div class="beneficiary-id">ID: ${benef.id} | ${benef.roomType === 'double' ? '👥 Double' : '👤 Simple'}</div>
                         </div>
-                        <div class="bed-info">
-                            <div class="bed-number">🛏️ ${benef.bed}</div>
-                            <div class="floor-badge">🏢 Étage ${benef.floor}</div>
+                        <div style="display: flex; gap: 8px; flex-direction: column; align-items: flex-end;">
+                            <div class="bed-number">🛏️ Lit ${benef.bed}</div>
+                            <div style="background: #667eea; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                                🏢 Étage ${benef.floor}
+                            </div>
                         </div>
                     </div>
-                    <p style="font-size: 12px; color: var(--text-light); margin-top: 10px;">👆 Clique pour voir les soins</p>
+
+                    <div class="care-items">
+                        ${database.careTypes.map(care => `
+                            <div class="care-item">
+                                <input type="checkbox" 
+                                       id="care_${benef.id}_${care.id}_${currentShift}"
+                                       ${currentShiftRecord[care.id] ? 'checked' : ''}
+                                       onchange="saveCareRecord('${benef.id}', ${care.id})">
+                                <label for="care_${benef.id}_${care.id}_${currentShift}">
+                                    ${care.icon} ${care.name}
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="notes-section">
+                        <label class="notes-label">📝 Notes/Observations/Incidents:</label>
+                        <textarea class="notes-textarea" 
+                                  id="notes_${benef.id}_${currentShift}"
+                                  placeholder="Entrez vos observations..."
+                                  onchange="saveNotes('${benef.id}')">${currentShiftRecord.notes || ''}</textarea>
+                    </div>
+
+                    <div style="margin-top: 10px; font-size: 12px; color: var(--text-light);">
+                        ${currentShiftRecord.lastSaved ? `✅ Sauvegardé: ${currentShiftRecord.lastSaved}` : '⏳ Non sauvegardé'}
+                    </div>
                 </div>
             `;
         }).join('');
     }
 
-    // ===== PROFIL MODAL - PREPOSE =====
-    let currentProfilePatient = null;
+    function saveCareRecord(beneficiaryId, careId) {
+        const recordKey = `${beneficiaryId}_${currentShift}`;
+        if (!database.records[recordKey]) {
+            database.records[recordKey] = {};
+        }
 
-    function openProfileModal(benefId) {
-        currentProfilePatient = database.beneficiaries.find(b => b.id === benefId);
-        const adminRequirements = getFromStorage(`patient_admin_${benefId}`) || {};
-        const preposeVerification = getFromStorage(`patient_prepose_${benefId}_${currentShift}`) || {};
+        const checkbox = document.getElementById(`care_${beneficiaryId}_${careId}_${currentShift}`);
+        database.records[recordKey][careId] = checkbox.checked ? new Date().toLocaleTimeString() : null;
+        database.records[recordKey].lastSaved = new Date().toLocaleTimeString();
 
-        document.getElementById('modalPatientName').textContent = currentProfilePatient.name;
-        document.getElementById('modalPatientInfo').textContent = `Lit: ${currentProfilePatient.bed} | Étage ${currentProfilePatient.floor}`;
+        // Visual feedback
+        renderBeneficiaries();
+    }
 
-        const careItems = document.getElementById('modalCareItems');
+    function saveNotes(beneficiaryId) {
+        const notesTextarea = document.getElementById(`notes_${beneficiaryId}_${currentShift}`);
+        const recordKey = `${beneficiaryId}_${currentShift}`;
         
-        // SECTION ADMIN (Lecture seule)
-        let html = '<div class="care-section">';
-        html += '<div class="care-section-title section-admin">🔴 À VÉRIFIER (Configuration Admin)</div>';
-        html += database.careRequirements.map(care => `
-            <div class="care-item">
-                <input type="checkbox" 
-                       id="admin_care_${benefId}_${care.id}"
-                       ${adminRequirements[care.id] ? 'checked' : ''}
-                       disabled>
-                <label for="admin_care_${benefId}_${care.id}">
-                    ${care.icon} ${care.name}
-                </label>
-            </div>
-        `).join('');
-        html += '</div>';
+        if (!database.records[recordKey]) {
+            database.records[recordKey] = {};
+        }
 
-        // SECTION PREPOSE (Cases à cocher)
-        html += '<div class="care-section">';
-        html += '<div class="care-section-title section-prepose">✅ SOINS COMPLÉTÉS (Cochez après avoir vérifié)</div>';
-        html += database.careRequirements.map(care => `
-            <div class="care-item">
-                <input type="checkbox" 
-                       id="prepose_care_${benefId}_${care.id}"
-                       ${preposeVerification[care.id] ? 'checked' : ''}
-                       onchange="updatePreposeVerification('${benefId}', ${care.id})">
-                <label for="prepose_care_${benefId}_${care.id}">
-                    ${care.icon} ${care.name}
-                </label>
-            </div>
-        `).join('');
-        html += '</div>';
-
-        careItems.innerHTML = html;
-        document.getElementById('profileModal').classList.add('active');
+        database.records[recordKey].notes = notesTextarea.value;
+        database.records[recordKey].lastSaved = new Date().toLocaleTimeString();
     }
 
-    function updatePreposeVerification(benefId, careId) {
-        const checkbox = document.getElementById(`prepose_care_${benefId}_${careId}`);
-        const verification = getFromStorage(`patient_prepose_${benefId}_${currentShift}`) || {};
-        
-        verification[careId] = checkbox.checked;
-        saveToStorage(`patient_prepose_${benefId}_${currentShift}`, verification);
-    }
-
-    function closeProfileModal() {
-        document.getElementById('profileModal').classList.remove('active');
-    }
-
-    // ===== INFIRMIERE =====
-    function initInfirmiereView() {
+    // ===== CHEF VIEW =====
+    function initChefView() {
         const navMenu = document.getElementById('navMenu');
-        navMenu.innerHTML = '<div class="nav-item active" onclick="showInfirmierePage()">📝 Rapports</div>';
-        
-        document.getElementById('infirmiereName').textContent = currentUser.name;
-        showInfirmierePage();
-        renderAllReports();
+        navMenu.innerHTML = `
+            <div class="nav-item active" onclick="showPage('chefDashboardPage')">📊 Tableau de Bord</div>
+            <div class="nav-item" onclick="showPage('chefReportPage')">📈 Rapports</div>
+            <div class="nav-item" onclick="showPage('chefAdminPage')">⚙️ Administration</div>
+        `;
+
+        document.getElementById('chefName').textContent = currentUser.name;
+        showPage('chefDashboardPage');
+        renderChefDashboard();
     }
 
-    function showInfirmierePage() {
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        document.getElementById('infirmiereReportsPage').classList.add('active');
+    function renderChefDashboard() {
+        // Statistics
+        const stats = calculateStats();
+        const statsHtml = `
+            <div class="stat-card">
+                <div class="stat-number">${stats.totalBeneficiaries}</div>
+                <div class="stat-label">Bénéficiaires Enregistrés</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${stats.recordsComplete}</div>
+                <div class="stat-label">Dossiers Complets (Aujourd'hui)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${stats.shiftsActive}</div>
+                <div class="stat-label">Quarts Actifs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${Object.keys(database.users).filter(k => database.users[k].role === 'prepose').length}</div>
+                <div class="stat-label">Préposés en Fonction</div>
+            </div>
+        `;
+        document.getElementById('dashboardStats').innerHTML = statsHtml;
+
+        // Summary Report
+        const report = generateSummaryReport();
+        document.getElementById('dashboardReport').innerHTML = report;
     }
 
-    function addReport() {
-        const input = document.getElementById('reportInput');
-        const text = input.value.trim();
+    function calculateStats() {
+        const today = new Date().toDateString();
+        let recordsComplete = 0;
 
-        if (!text) {
-            alert('Veuillez entrer un rapport');
+        database.beneficiaries.forEach(benef => {
+            database.shifts.forEach(shift => {
+                const recordKey = `${benef.id}_${shift.id}`;
+                const record = database.records[recordKey];
+                if (record && Object.keys(record).length > 2) {
+                    recordsComplete++;
+                }
+            });
+        });
+
+        return {
+            totalBeneficiaries: database.beneficiaries.length,
+            recordsComplete: recordsComplete,
+            shiftsActive: database.shifts.length,
+            preposesCount: Object.keys(database.users).filter(k => database.users[k].role === 'prepose').length
+        };
+    }
+
+    function generateSummaryReport() {
+        let html = '<table><thead><tr><th>Bénéficiaire</th><th>Lit</th><th>Matin</th><th>Midi</th><th>Soir</th><th>Notes</th></tr></thead><tbody>';
+
+        database.beneficiaries.forEach(benef => {
+            let matin = '', midi = '', soir = '', notes = '';
+
+            database.shifts.forEach(shift => {
+                const recordKey = `${benef.id}_${shift.id}`;
+                const record = database.records[recordKey];
+                const completed = record ? Object.values(record).filter(v => v && typeof v === 'string' && v.includes(':')).length : 0;
+                const total = database.careTypes.length;
+                const status = completed === total ? '✅ Complet' : completed > 0 ? '⚠️ Partiel' : '❌ Vide';
+                const statusClass = completed === total ? 'status-complete' : completed > 0 ? 'status-partial' : 'status-incomplete';
+                const shiftStatus = `<span class="status-badge ${statusClass}">${completed}/${total}</span>`;
+
+                if (shift.id === 'matin') matin = shiftStatus;
+                else if (shift.id === 'midi') midi = shiftStatus;
+                else soir = shiftStatus;
+
+                if (record && record.notes) notes = record.notes.substring(0, 30) + (record.notes.length > 30 ? '...' : '');
+            });
+
+            html += `<tr>
+                <td><strong>${benef.name}</strong></td>
+                <td>${benef.bed}</td>
+                <td>${matin}</td>
+                <td>${midi}</td>
+                <td>${soir}</td>
+                <td>${notes ? '📝 ' + notes : '-'}</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table>';
+        return html;
+    }
+
+    function generateDetailedReport() {
+        const dateInput = document.getElementById('reportDate').value;
+        const selectedDate = dateInput ? new Date(dateInput).toLocaleDateString('fr-CA') : new Date().toLocaleDateString('fr-CA');
+
+        let html = `<h3>Rapport Détaillé - ${selectedDate}</h3>`;
+
+        database.beneficiaries.forEach(benef => {
+            html += `<div style="margin-bottom: 20px; padding: 15px; background: var(--bg-light); border-radius: 8px;">
+                <h4>${benef.name} (Lit ${benef.bed})</h4>`;
+
+            database.shifts.forEach(shift => {
+                const recordKey = `${benef.id}_${shift.id}`;
+                const record = database.records[recordKey] || {};
+
+                html += `<div style="margin-top: 10px; padding: 10px; background: white; border-radius: 6px;">
+                    <strong>${shift.name}</strong><br>`;
+
+                database.careTypes.forEach(care => {
+                    const completed = record[care.id];
+                    html += `<div style="margin-left: 15px; font-size: 13px;">
+                        ${completed ? '✅' : '⭕'} ${care.icon} ${care.name} ${completed ? `(${completed})` : ''}
+                    </div>`;
+                });
+
+                if (record.notes) {
+                    html += `<div style="margin-left: 15px; margin-top: 5px; padding: 8px; background: #fffacd; border-radius: 4px; font-size: 12px;">
+                        📝 <strong>Notes:</strong> ${record.notes}
+                    </div>`;
+                }
+
+                html += '</div>';
+            });
+
+            html += '</div>';
+        });
+
+        document.getElementById('detailedReportContent').innerHTML = html;
+    }
+
+    function printReport() {
+        generateDetailedReport();
+        setTimeout(() => window.print(), 100);
+    }
+
+    function exportToCSV() {
+        let csv = 'Bénéficiaire,Lit,Quart,Soin,Complété,Heure,Notes\n';
+
+        database.beneficiaries.forEach(benef => {
+            database.shifts.forEach(shift => {
+                const recordKey = `${benef.id}_${shift.id}`;
+                const record = database.records[recordKey] || {};
+
+                database.careTypes.forEach(care => {
+                    const completed = record[care.id] ? 'OUI' : 'NON';
+                    const time = record[care.id] || '-';
+                    const notes = (record.notes || '').replace(/,/g, ';');
+                    csv += `"${benef.name}","${benef.bed}","${shift.name}","${care.name}","${completed}","${time}","${notes}"\n`;
+                });
+            });
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `rapport_soins_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+    }
+
+    function renderPreposeTable() {
+        const table = document.getElementById('preposeTable');
+        const preposesData = Object.entries(database.users)
+            .filter(([_, user]) => user.role === 'prepose')
+            .map(([id, user]) => ({ id, ...user }));
+
+        table.innerHTML = preposesData.map(prepose => `
+            <tr>
+                <td>${prepose.id}</td>
+                <td>${prepose.name}</td>
+                <td>Tous</td>
+                <td>
+                    <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" 
+                            onclick="deletePrepose('${prepose.id}')">Supprimer</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function addNewPrepose() {
+        const id = document.getElementById('newPreposeId').value.trim();
+        const name = document.getElementById('newPreposeNom').value.trim();
+        const password = document.getElementById('newPreposePassword').value;
+
+        if (!id || !name || !password) {
+            alert('Veuillez remplir tous les champs');
             return;
         }
 
-        const reports = getFromStorage('reports') || [];
-        const now = new Date();
-        const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-        reports.unshift({ text, time });
-        saveToStorage('reports', reports);
-
-        input.value = '';
-        renderAllReports();
-        renderReports();
-    }
-
-    function renderAllReports() {
-        const container = document.getElementById('allReports');
-        const reports = getFromStorage('reports') || [];
-
-        if (reports.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-light);">Aucun rapport pour le moment</p>';
+        if (database.users[id]) {
+            alert('Cet ID existe déjà');
             return;
         }
 
-        container.innerHTML = '<h3 style="margin-bottom: 15px;">Tous les Rapports</h3>' +
-            reports.map((report, i) => `
-                <div class="report-item">
-                    <div class="report-time">${report.time}</div>
-                    <div class="report-text">${report.text}</div>
-                </div>
-            `).join('');
-    }
-
-    // ===== ADMIN =====
-    function initAdminView() {
-        const navMenu = document.getElementById('navMenu');
-        navMenu.innerHTML = '<div class="nav-item active" onclick="showAdminPage()">⚙️ Config</div>';
+        database.users[id] = { password, name, role: 'prepose' };
+        document.getElementById('newPreposeId').value = '';
+        document.getElementById('newPreposeNom').value = '';
+        document.getElementById('newPreposePassword').value = '';
         
-        document.getElementById('adminName').textContent = currentUser.name;
-        showAdminPage();
-        renderAdminGrid();
+        alert(`✅ Préposé "${name}" ajouté avec succès!\nID: ${id}`);
+        renderPreposeTable();
     }
 
-    function showAdminPage() {
+    function deletePrepose(id) {
+        if (confirm(`Êtes-vous sûr de vouloir supprimer ${database.users[id].name}?`)) {
+            delete database.users[id];
+            renderPreposeTable();
+        }
+    }
+
+    // ===== PAGE NAVIGATION =====
+    function showPage(pageId) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        document.getElementById('adminPage').classList.add('active');
-    }
+        document.getElementById(pageId).classList.add('active');
 
-    function renderAdminGrid() {
-        const grid = document.getElementById('adminGrid');
-        grid.innerHTML = database.beneficiaries.map(benef => {
-            return `
-                <div class="beneficiary-card" onclick="openAdminProfileModal('${benef.id}')">
-                    <div class="beneficiary-header">
-                        <div class="beneficiary-info">
-                            <div class="beneficiary-name">${benef.name}</div>
-                            <div class="beneficiary-id">ID: ${benef.id}</div>
-                        </div>
-                        <div class="bed-info">
-                            <div class="bed-number">🛏️ ${benef.bed}</div>
-                            <div class="floor-badge">🏢 Étage ${benef.floor}</div>
-                        </div>
-                    </div>
-                    <p style="font-size: 12px; color: var(--text-light); margin-top: 10px;">👆 Clique pour configurer</p>
-                </div>
-            `;
-        }).join('');
-    }
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        event.target.classList.add('active');
 
-    function openAdminProfileModal(benefId) {
-        currentProfilePatient = database.beneficiaries.find(b => b.id === benefId);
-        const requirements = getFromStorage(`patient_admin_${benefId}`) || {};
-
-        document.getElementById('modalPatientName').textContent = currentProfilePatient.name + ' (Configuration)';
-        document.getElementById('modalPatientInfo').textContent = `Lit: ${currentProfilePatient.bed} | Étage ${currentProfilePatient.floor}`;
-
-        const careItems = document.getElementById('modalCareItems');
-        careItems.innerHTML = '<div class="care-section"><div class="care-section-title section-admin">Cocher les soins & équipements requis:</div>' +
-            database.careRequirements.map(care => `
-                <div class="care-item">
-                    <input type="checkbox" 
-                           id="admin_config_${benefId}_${care.id}"
-                           ${requirements[care.id] ? 'checked' : ''}
-                           onchange="updateAdminRequirement('${benefId}', ${care.id})">
-                    <label for="admin_config_${benefId}_${care.id}">
-                        ${care.icon} ${care.name}
-                    </label>
-                </div>
-            `).join('') + '</div>';
-
-        document.getElementById('profileModal').classList.add('active');
-    }
-
-    function updateAdminRequirement(benefId, careId) {
-        const checkbox = document.getElementById(`admin_config_${benefId}_${careId}`);
-        const requirements = getFromStorage(`patient_admin_${benefId}`) || {};
-        
-        requirements[careId] = checkbox.checked;
-        saveToStorage(`patient_admin_${benefId}`, requirements);
+        if (pageId === 'chefAdminPage') {
+            renderPreposeTable();
+        }
     }
 
     // ===== INIT =====
     window.addEventListener('load', () => {
+        // Focus on user ID field
         document.getElementById('userId').focus();
     });
-
-    window.onclick = function(event) {
-        const modal = document.getElementById('profileModal');
-        if (event.target == modal) {
-            closeProfileModal();
-        }
-    }
 </script>
 
 </body>
