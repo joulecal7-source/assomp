@@ -16,6 +16,7 @@
             --primary-dark: #1e40af;
             --success: #059669;
             --danger: #dc2626;
+            --warning: #f59e0b;
             --bg-light: #f8fafc;
             --bg-white: #ffffff;
             --text-dark: #1e293b;
@@ -88,9 +89,18 @@
             color: white;
         }
 
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            padding: 10px 15px;
+            font-size: 13px;
+            width: auto;
+            margin-top: 10px;
+        }
+
         .role-selector {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 12px;
             margin-bottom: 20px;
         }
@@ -102,6 +112,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 13px;
         }
 
         .role-btn.active {
@@ -224,12 +235,24 @@
             padding: 20px;
             box-shadow: var(--shadow);
             border-left: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .beneficiary-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
 
         .beneficiary-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 15px;
+            align-items: flex-start;
+        }
+
+        .beneficiary-info {
+            flex: 1;
         }
 
         .beneficiary-name {
@@ -338,6 +361,137 @@
             color: var(--success);
         }
 
+        /* MODAL PROFIL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+        }
+
+        .close-btn {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+
+        .care-requirement {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .care-requirement input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: default;
+        }
+
+        .care-requirement input[type="checkbox"]:disabled {
+            opacity: 1;
+            cursor: not-allowed;
+        }
+
+        .care-requirement label {
+            cursor: default;
+            font-size: 14px;
+            flex: 1;
+            user-select: none;
+        }
+
+        /* RAPPORTS */
+        .reports-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .report-item {
+            padding: 15px;
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .report-time {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .report-text {
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .add-report-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .add-report-form input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .add-report-form button {
+            padding: 10px 20px;
+            background: var(--warning);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
         .hidden {
             display: none;
         }
@@ -348,6 +502,10 @@
             }
             .beneficiaries-grid {
                 grid-template-columns: 1fr;
+            }
+            .modal-content {
+                width: 95%;
+                margin: 20% auto;
             }
         }
     </style>
@@ -363,7 +521,8 @@
         <label style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px;">Rôle:</label>
         <div class="role-selector">
             <div class="role-btn active" onclick="selectRole('prepose')">👤 Préposé</div>
-            <div class="role-btn" onclick="selectRole('chef')">👨‍💼 Chef</div>
+            <div class="role-btn" onclick="selectRole('infirmiere')">👩‍⚕️ Infirmière</div>
+            <div class="role-btn" onclick="selectRole('admin')">👨‍💼 Admin</div>
         </div>
 
         <div class="form-group">
@@ -381,7 +540,8 @@
         <p style="margin-top: 20px; font-size: 12px; color: var(--text-light); text-align: center;">
             <strong>Identifiants:</strong><br>
             Préposé: PREP001 / 1234<br>
-            Chef: CHEF001 / 1234
+            Infirmière: INF001 / 1234<br>
+            Admin: ADMIN001 / 1234
         </p>
     </div>
 </div>
@@ -398,12 +558,14 @@
         <!-- PREPOSE -->
         <div id="preposeShiftPage" class="page">
             <div class="page-header">
-                <h2>Enregistrement des Soins</h2>
+                <h2>📋 Enregistrement des Soins</h2>
                 <div style="font-size: 14px; color: var(--text-light);">
                     <strong id="userName"></strong><br>
                     <span id="userShift"></span>
                 </div>
             </div>
+
+            <div id="reportsDisplay" class="reports-section"></div>
 
             <div class="shift-selector" id="shiftSelector"></div>
 
@@ -419,24 +581,50 @@
             <div class="beneficiaries-grid" id="beneficiariesGrid"></div>
         </div>
 
-        <!-- CHEF -->
-        <div id="chefDashboardPage" class="page">
+        <!-- INFIRMIERE -->
+        <div id="infirmiereReportsPage" class="page">
             <div class="page-header">
-                <h2>Tableau de Bord</h2>
+                <h2>📝 Rapports Importants</h2>
                 <div style="font-size: 14px; color: var(--text-light);">
-                    <strong id="chefName"></strong>
+                    <strong id="infirmiereName"></strong>
                 </div>
             </div>
 
-            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: var(--shadow);">
-                <h3>Application ASSOMP</h3>
-                <p style="margin-top: 10px; color: var(--text-light);">
-                    ✅ Version stable - Tous les soins sont enregistrés<br>
-                    ✅ 84 bénéficiaires (90 lits)<br>
-                    ✅ Étage 2: 39 lits | Étage 3: 51 lits
-                </p>
+            <div class="reports-section">
+                <h3 style="margin-bottom: 15px;">➕ Ajouter un Rapport</h3>
+                <div class="add-report-form">
+                    <input type="text" id="reportInput" placeholder="Ex: Patient A tombé à 20h | Caches nez chambre 202 | ...">
+                    <button onclick="addReport()">Envoyer</button>
+                </div>
+                <div id="allReports" style="margin-top: 20px;"></div>
             </div>
         </div>
+
+        <!-- ADMIN -->
+        <div id="adminPage" class="page">
+            <div class="page-header">
+                <h2>⚙️ Configuration Patients</h2>
+                <div style="font-size: 14px; color: var(--text-light);">
+                    <strong id="adminName"></strong>
+                </div>
+            </div>
+
+            <div id="adminGrid" class="beneficiaries-grid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PROFIL PATIENT -->
+<div id="profileModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div>
+                <h2 id="modalPatientName"></h2>
+                <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;" id="modalPatientInfo"></p>
+            </div>
+            <span class="close-btn" onclick="closeProfileModal()">&times;</span>
+        </div>
+        <div id="modalCareItems"></div>
     </div>
 </div>
 
@@ -452,8 +640,29 @@
         users: {
             'PREP001': { password: '1234', name: 'Marie Dupont', role: 'prepose' },
             'PREP002': { password: '1234', name: 'Jean Martin', role: 'prepose' },
-            'CHEF001': { password: '1234', name: 'Pierre Rousseau', role: 'chef' }
+            'INF001': { password: '1234', name: 'Sophie Bernard', role: 'infirmiere' },
+            'ADMIN001': { password: '1234', name: 'Pierre Rousseau', role: 'admin' }
         },
+        careRequirements: [
+            { id: 1, name: 'Porte dentier', icon: '🦷' },
+            { id: 2, name: 'Porte appareils auditifs', icon: '👂' },
+            { id: 3, name: 'Porte lunettes', icon: '👓' },
+            { id: 4, name: 'Utilise marchette', icon: '🚶' },
+            { id: 5, name: 'Utilise chaise roulante', icon: '♿' },
+            { id: 6, name: 'Se déplace en pivot', icon: '🔄' },
+            { id: 7, name: 'Se déplace avec lève-personnes', icon: '🏋️' },
+            { id: 8, name: 'Se déplace avec Sara', icon: '🪑' },
+            { id: 9, name: 'Marche', icon: '🚶' },
+            { id: 10, name: 'Mange seul', icon: '🍴' },
+            { id: 11, name: 'Aide à manger', icon: '🥄' },
+            { id: 12, name: 'Liquide miel', icon: '🍯' },
+            { id: 13, name: 'Liquide nectar', icon: '🧃' },
+            { id: 14, name: 'Diète purée', icon: '🥣' },
+            { id: 15, name: 'Diète normale', icon: '🍽️' },
+            { id: 16, name: 'Ceinture de marche', icon: '🎽' },
+            { id: 17, name: 'Tags sur fauteuil', icon: '🏷️' },
+            { id: 18, name: 'Tags au lit', icon: '🏷️' }
+        ],
         beneficiaries: [
             { id: 'B001', name: 'Patient 201', bed: '201', floor: 2, roomType: 'simple' },
             { id: 'B002', name: 'Patient 202', bed: '202', floor: 2, roomType: 'simple' },
@@ -492,7 +701,6 @@
             { id: 'B035', name: 'Patient 2022B', bed: '2022B', floor: 2, roomType: 'double' },
             { id: 'B036', name: 'Patient 2023A', bed: '2023A', floor: 2, roomType: 'double' },
             { id: 'B037', name: 'Patient 2023B', bed: '2023B', floor: 2, roomType: 'double' },
-            
             { id: 'B038', name: 'Patient 301', bed: '301', floor: 3, roomType: 'simple' },
             { id: 'B039', name: 'Patient 302', bed: '302', floor: 3, roomType: 'simple' },
             { id: 'B040', name: 'Patient 303', bed: '303', floor: 3, roomType: 'simple' },
@@ -541,17 +749,6 @@
             { id: 'B083', name: 'Patient 3027A', bed: '3027A', floor: 3, roomType: 'double' },
             { id: 'B084', name: 'Patient 3027B', bed: '3027B', floor: 3, roomType: 'double' }
         ],
-        careTypes: [
-            { id: 1, name: 'Besoin d\'élimination', icon: '🚽' },
-            { id: 2, name: 'Besoin de manger', icon: '🍽️' },
-            { id: 3, name: 'Bain partiel', icon: '🚿' },
-            { id: 4, name: 'Bain complet', icon: '🛁' },
-            { id: 5, name: 'Changement de culotte', icon: '👕' },
-            { id: 6, name: 'Lavage des fauteuils roulants', icon: '♻️' },
-            { id: 7, name: 'Distribution de collations', icon: '🍎' },
-            { id: 8, name: 'Hydratation des patients', icon: '💧' },
-            { id: 9, name: 'Vérification barrières lit', icon: '🛏️' }
-        ],
         shifts: [
             { id: 'matin', name: 'Matin (06h-14h)' },
             { id: 'midi', name: 'Midi (14h-22h)' },
@@ -559,7 +756,7 @@
         ]
     };
 
-    // ===== STORAGE FUNCTIONS =====
+    // ===== STORAGE =====
     function saveToStorage(key, value) {
         try {
             localStorage.setItem(key, JSON.stringify(value));
@@ -611,8 +808,10 @@
 
         if (user.role === 'prepose') {
             initPreposeView();
-        } else {
-            initChefView();
+        } else if (user.role === 'infirmiere') {
+            initInfirmiereView();
+        } else if (user.role === 'admin') {
+            initAdminView();
         }
     }
 
@@ -626,7 +825,7 @@
         }
     }
 
-    // ===== PREPOSE VIEW =====
+    // ===== PREPOSE =====
     function initPreposeView() {
         const navMenu = document.getElementById('navMenu');
         navMenu.innerHTML = '<div class="nav-item active" onclick="showPreposeePage()">📋 Mes Soins</div>';
@@ -634,6 +833,7 @@
         document.getElementById('userName').textContent = currentUser.name;
         showPreposeePage();
         renderShiftSelector();
+        renderReports();
         renderBeneficiaries();
     }
 
@@ -673,6 +873,24 @@
         renderBeneficiaries();
     }
 
+    function renderReports() {
+        const reportsDiv = document.getElementById('reportsDisplay');
+        const reports = getFromStorage('reports') || [];
+        
+        if (reports.length === 0) {
+            reportsDiv.innerHTML = '<p style="color: var(--text-light); font-size: 14px;">Aucun rapport pour le moment</p>';
+            return;
+        }
+
+        reportsDiv.innerHTML = '<h3 style="margin-bottom: 15px;">📢 Rapports Importants</h3>' + 
+            reports.map(report => `
+                <div class="report-item">
+                    <div class="report-time">${report.time}</div>
+                    <div class="report-text">${report.text}</div>
+                </div>
+            `).join('');
+    }
+
     function renderBeneficiaries() {
         const grid = document.getElementById('beneficiariesGrid');
         const beneficiariesToDisplay = currentFloor === 'all' 
@@ -680,101 +898,189 @@
             : database.beneficiaries.filter(b => b.floor === currentFloor);
 
         grid.innerHTML = beneficiariesToDisplay.map(benef => {
-            const recordKey = `record_${benef.id}_${currentShift}`;
-            const record = getFromStorage(recordKey) || { checks: {}, notes: '' };
-
             return `
-                <div class="beneficiary-card">
+                <div class="beneficiary-card" onclick="openProfileModal('${benef.id}')">
                     <div class="beneficiary-header">
-                        <div>
+                        <div class="beneficiary-info">
                             <div class="beneficiary-name">${benef.name}</div>
-                            <div class="beneficiary-id">ID: ${benef.id} | ${benef.roomType === 'double' ? '👥 Double' : '👤 Simple'}</div>
+                            <div class="beneficiary-id">ID: ${benef.id}</div>
                         </div>
                         <div class="bed-info">
                             <div class="bed-number">🛏️ ${benef.bed}</div>
                             <div class="floor-badge">🏢 Étage ${benef.floor}</div>
                         </div>
                     </div>
-
-                    <div class="care-items">
-                        ${database.careTypes.map(care => `
-                            <div class="care-item">
-                                <input type="checkbox" 
-                                       id="check_${recordKey}_${care.id}"
-                                       ${record.checks[care.id] ? 'checked' : ''}
-                                       onchange="saveCheck('${benef.id}', ${care.id})">
-                                <label for="check_${recordKey}_${care.id}">
-                                    ${care.icon} ${care.name}
-                                </label>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <div class="notes-section">
-                        <label class="notes-label">📝 Notes/Observations/Incidents:</label>
-                        <textarea class="notes-textarea" 
-                                  id="notes_${recordKey}"
-                                  placeholder="Entrez vos observations..."
-                                  onblur="saveNotes('${benef.id}')">${record.notes || ''}</textarea>
-                        <div class="save-status" id="status_${recordKey}">
-                            ${record.lastSaved ? `✅ Sauvegardé: ${record.lastSaved}` : ''}
-                        </div>
-                    </div>
+                    <p style="font-size: 12px; color: var(--text-light); margin-top: 10px;">👆 Clique pour voir les soins</p>
                 </div>
             `;
         }).join('');
     }
 
-    function saveCheck(benefId, careId) {
-        const recordKey = `record_${benefId}_${currentShift}`;
-        const record = getFromStorage(recordKey) || { checks: {}, notes: '' };
-        
-        const checkbox = document.getElementById(`check_${recordKey}_${careId}`);
-        record.checks[careId] = checkbox.checked;
-        record.lastSaved = new Date().toLocaleTimeString();
-        
-        saveToStorage(recordKey, record);
-        updateStatus(recordKey);
+    // ===== PROFIL MODAL =====
+    let currentProfilePatient = null;
+
+    function openProfileModal(benefId) {
+        currentProfilePatient = database.beneficiaries.find(b => b.id === benefId);
+        const requirements = getFromStorage(`patient_${benefId}`) || {};
+
+        document.getElementById('modalPatientName').textContent = currentProfilePatient.name;
+        document.getElementById('modalPatientInfo').textContent = `Lit: ${currentProfilePatient.bed} | Étage ${currentProfilePatient.floor}`;
+
+        const careItems = document.getElementById('modalCareItems');
+        careItems.innerHTML = '<h3 style="margin-bottom: 15px;">Soins & Équipements à Vérifier:</h3>' +
+            database.careRequirements.map(care => `
+                <div class="care-requirement">
+                    <input type="checkbox" 
+                           id="care_${benefId}_${care.id}"
+                           ${requirements[care.id] ? 'checked' : ''}
+                           disabled>
+                    <label for="care_${benefId}_${care.id}">
+                        ${care.icon} ${care.name}
+                    </label>
+                </div>
+            `).join('');
+
+        document.getElementById('profileModal').classList.add('active');
     }
 
-    function saveNotes(benefId) {
-        const recordKey = `record_${benefId}_${currentShift}`;
-        const record = getFromStorage(recordKey) || { checks: {}, notes: '' };
-        
-        const textarea = document.getElementById(`notes_${recordKey}`);
-        record.notes = textarea.value;
-        record.lastSaved = new Date().toLocaleTimeString();
-        
-        saveToStorage(recordKey, record);
-        updateStatus(recordKey);
+    function closeProfileModal() {
+        document.getElementById('profileModal').classList.remove('active');
     }
 
-    function updateStatus(recordKey) {
-        const statusDiv = document.getElementById(`status_${recordKey}`);
-        const record = getFromStorage(recordKey);
-        if (statusDiv && record) {
-            statusDiv.innerHTML = `✅ Sauvegardé: ${record.lastSaved}`;
-        }
-    }
-
-    // ===== CHEF VIEW =====
-    function initChefView() {
+    // ===== INFIRMIERE =====
+    function initInfirmiereView() {
         const navMenu = document.getElementById('navMenu');
-        navMenu.innerHTML = '<div class="nav-item active">📊 Tableau de Bord</div>';
+        navMenu.innerHTML = '<div class="nav-item active" onclick="showInfirmierePage()">📝 Rapports</div>';
         
-        document.getElementById('chefName').textContent = currentUser.name;
-        showChefPage();
+        document.getElementById('infirmiereName').textContent = currentUser.name;
+        showInfirmierePage();
+        renderAllReports();
     }
 
-    function showChefPage() {
+    function showInfirmierePage() {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        document.getElementById('chefDashboardPage').classList.add('active');
+        document.getElementById('infirmiereReportsPage').classList.add('active');
+    }
+
+    function addReport() {
+        const input = document.getElementById('reportInput');
+        const text = input.value.trim();
+
+        if (!text) {
+            alert('Veuillez entrer un rapport');
+            return;
+        }
+
+        const reports = getFromStorage('reports') || [];
+        const now = new Date();
+        const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+        reports.unshift({ text, time });
+        saveToStorage('reports', reports);
+
+        input.value = '';
+        renderAllReports();
+        renderReports();
+    }
+
+    function renderAllReports() {
+        const container = document.getElementById('allReports');
+        const reports = getFromStorage('reports') || [];
+
+        if (reports.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-light);">Aucun rapport pour le moment</p>';
+            return;
+        }
+
+        container.innerHTML = '<h3 style="margin-bottom: 15px;">Tous les Rapports</h3>' +
+            reports.map((report, i) => `
+                <div class="report-item">
+                    <div class="report-time">${report.time}</div>
+                    <div class="report-text">${report.text}</div>
+                </div>
+            `).join('');
+    }
+
+    // ===== ADMIN =====
+    function initAdminView() {
+        const navMenu = document.getElementById('navMenu');
+        navMenu.innerHTML = '<div class="nav-item active" onclick="showAdminPage()">⚙️ Config</div>';
+        
+        document.getElementById('adminName').textContent = currentUser.name;
+        showAdminPage();
+        renderAdminGrid();
+    }
+
+    function showAdminPage() {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('adminPage').classList.add('active');
+    }
+
+    function renderAdminGrid() {
+        const grid = document.getElementById('adminGrid');
+        grid.innerHTML = database.beneficiaries.map(benef => {
+            return `
+                <div class="beneficiary-card" onclick="openAdminProfileModal('${benef.id}')">
+                    <div class="beneficiary-header">
+                        <div class="beneficiary-info">
+                            <div class="beneficiary-name">${benef.name}</div>
+                            <div class="beneficiary-id">ID: ${benef.id}</div>
+                        </div>
+                        <div class="bed-info">
+                            <div class="bed-number">🛏️ ${benef.bed}</div>
+                            <div class="floor-badge">🏢 Étage ${benef.floor}</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-light); margin-top: 10px;">👆 Clique pour configurer</p>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function openAdminProfileModal(benefId) {
+        currentProfilePatient = database.beneficiaries.find(b => b.id === benefId);
+        const requirements = getFromStorage(`patient_${benefId}`) || {};
+
+        document.getElementById('modalPatientName').textContent = currentProfilePatient.name + ' (Configuration)';
+        document.getElementById('modalPatientInfo').textContent = `Lit: ${currentProfilePatient.bed} | Étage ${currentProfilePatient.floor}`;
+
+        const careItems = document.getElementById('modalCareItems');
+        careItems.innerHTML = '<h3 style="margin-bottom: 15px;">Cocher les soins & équipements requis:</h3>' +
+            database.careRequirements.map(care => `
+                <div class="care-requirement">
+                    <input type="checkbox" 
+                           id="care_${benefId}_${care.id}"
+                           ${requirements[care.id] ? 'checked' : ''}
+                           onchange="updateAdminRequirement('${benefId}', ${care.id})">
+                    <label for="care_${benefId}_${care.id}">
+                        ${care.icon} ${care.name}
+                    </label>
+                </div>
+            `).join('');
+
+        document.getElementById('profileModal').classList.add('active');
+    }
+
+    function updateAdminRequirement(benefId, careId) {
+        const checkbox = document.getElementById(`care_${benefId}_${careId}`);
+        const requirements = getFromStorage(`patient_${benefId}`) || {};
+        
+        requirements[careId] = checkbox.checked;
+        saveToStorage(`patient_${benefId}`, requirements);
     }
 
     // ===== INIT =====
     window.addEventListener('load', () => {
         document.getElementById('userId').focus();
     });
+
+    // Fermer modal en cliquant en dehors
+    window.onclick = function(event) {
+        const modal = document.getElementById('profileModal');
+        if (event.target == modal) {
+            closeProfileModal();
+        }
+    }
 </script>
 
 </body>
