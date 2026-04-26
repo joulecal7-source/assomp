@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASSOMP</title>
+    <title>ASSOMP - Rapport de Transition</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
@@ -74,12 +74,32 @@
         .add-report-form input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
         .add-report-form button { padding: 10px 20px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         
+        .rapport-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .rapport-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #2563eb; }
+        .rapport-header h3 { color: #2563eb; margin-bottom: 10px; }
+        .patient-rapport { background: #f9f9f9; padding: 20px; margin-bottom: 20px; border-left: 4px solid #2563eb; border-radius: 6px; }
+        .patient-rapport h4 { color: #1e293b; margin-bottom: 12px; }
+        .care-item-rapport { padding: 10px; margin-bottom: 8px; background: white; border-radius: 4px; border-left: 3px solid #059669; }
+        .care-item-rapport.incomplete { border-left-color: #dc2626; }
+        .care-done { color: #059669; font-weight: 600; }
+        .care-notdone { color: #dc2626; font-weight: 600; }
+        .audio-controls { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+        .audio-btn { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .audio-btn:hover { background: #1e40af; }
+        .audio-btn.stop { background: #dc2626; }
+        .print-btn { padding: 12px 20px; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        
         @media (max-width: 768px) {
             .app-container { grid-template-columns: 1fr; }
             .beneficiaries-grid { grid-template-columns: 1fr; }
             .modal-content { width: 95%; margin: 20% auto; }
             .care-table { font-size: 12px; }
             .care-table th, .care-table td { padding: 8px 4px; }
+        }
+        
+        @media print {
+            .audio-controls, .logout-btn, .sidebar { display: none; }
+            .rapport-container { box-shadow: none; }
         }
     </style>
 </head>
@@ -126,6 +146,39 @@
     </div>
 
     <div class="main-content">
+        <!-- PAGE RAPPORT DE TRANSITION -->
+        <div id="rapportPage" class="page">
+            <div class="page-header">
+                <h2>📋 Rapport de Transition</h2>
+                <div style="font-size: 14px; color: #666;">
+                    <strong id="rapportUserName"></strong><br>
+                    <span id="rapportInfo"></span>
+                </div>
+            </div>
+
+            <div class="rapport-container">
+                <div class="audio-controls">
+                    <button class="audio-btn" onclick="speakRapport()">🔊 Écouter le rapport</button>
+                    <button class="audio-btn stop" onclick="stopSpeaking()">⏹️ Arrêter</button>
+                    <button class="print-btn" onclick="window.print()">🖨️ Imprimer</button>
+                </div>
+
+                <div id="rapportContent"></div>
+            </div>
+
+            <div class="shift-selector" id="rapportShiftSelector"></div>
+
+            <div class="floor-filter">
+                <label>🏢 Filtrer par Étage:</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                    <button class="shift-btn active" onclick="filterRapportFloor('all')">📋 Tous</button>
+                    <button class="shift-btn" onclick="filterRapportFloor(2)">🏢 Étage 2</button>
+                    <button class="shift-btn" onclick="filterRapportFloor(3)">🏢 Étage 3</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE SOINS PREPOSE -->
         <div id="preposeShiftPage" class="page">
             <div class="page-header">
                 <h2>📋 Enregistrement des Soins</h2>
@@ -151,6 +204,7 @@
             <div class="beneficiaries-grid" id="beneficiariesGrid"></div>
         </div>
 
+        <!-- PAGE RAPPORTS INFIRMIERE -->
         <div id="infirmiereReportsPage" class="page">
             <div class="page-header">
                 <h2>📝 Rapports Importants</h2>
@@ -169,6 +223,7 @@
             </div>
         </div>
 
+        <!-- PAGE ADMIN -->
         <div id="adminPage" class="page">
             <div class="page-header">
                 <h2>⚙️ Configuration Patients</h2>
@@ -182,6 +237,7 @@
     </div>
 </div>
 
+<!-- MODAL PROFIL -->
 <div id="profileModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -199,7 +255,9 @@
     let currentUser = null;
     let currentShift = 'matin';
     let currentFloor = 'all';
+    let rapportFloor = 'all';
     let selectedRole = 'prepose';
+    let isSpeaking = false;
 
     const database = {
         users: {
@@ -354,17 +412,113 @@
     }
 
     function initPreposeView() {
-        document.getElementById('navMenu').innerHTML = '<div class="nav-item active" onclick="showPreposeePage()">📋 Mes Soins</div>';
+        const navHTML = `
+            <div class="nav-item active" onclick="showRapportPage()">📋 Rapport</div>
+            <div class="nav-item" onclick="showPreposeePage()">📝 Mes Soins</div>
+        `;
+        document.getElementById('navMenu').innerHTML = navHTML;
         document.getElementById('userName').textContent = currentUser.name;
-        showPreposeePage();
+        document.getElementById('rapportUserName').textContent = currentUser.name;
+        showRapportPage();
+        renderRapport();
         renderShiftSelector();
         renderReports();
         renderBeneficiaries();
     }
 
+    function showRapportPage() {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('rapportPage').classList.add('active');
+        updateRapportNav();
+        renderRapport();
+    }
+
     function showPreposeePage() {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
         document.getElementById('preposeShiftPage').classList.add('active');
+        updatePreposeNav();
+    }
+
+    function updateRapportNav() {
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.nav-item')[0].classList.add('active');
+    }
+
+    function updatePreposeNav() {
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.nav-item')[1].classList.add('active');
+    }
+
+    function renderRapport() {
+        const prevShift = currentShift === 'matin' ? 'soir' : currentShift === 'midi' ? 'matin' : 'midi';
+        const shiftNames = { matin: 'Matin (06h-14h)', midi: 'Midi (14h-22h)', soir: 'Soir (22h-06h)' };
+        const today = new Date().toLocaleDateString('fr-CA');
+
+        document.getElementById('rapportInfo').textContent = `Rapport du shift ${shiftNames[prevShift]} - ${today}`;
+
+        const beneficiariesToDisplay = rapportFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === rapportFloor);
+
+        let html = `<div class="rapport-header"><h3>Rapport de Transition - ${shiftNames[prevShift]}</h3><p>Date: ${today}</p></div>`;
+
+        beneficiariesToDisplay.forEach(benef => {
+            const adminReqs = getFromStorage(`patient_admin_${benef.id}`) || {};
+            const prevShiftData = getFromStorage(`patient_prepose_${benef.id}_${prevShift}`) || {};
+
+            html += `<div class="patient-rapport">
+                <h4>${benef.name} - Lit ${benef.bed}</h4>`;
+
+            database.careRequirements.forEach((care, idx) => {
+                if (adminReqs[idx]) {
+                    const isDone = prevShiftData[idx];
+                    html += `<div class="care-item-rapport ${!isDone ? 'incomplete' : ''}">
+                        ${isDone ? '<span class="care-done">✅</span>' : '<span class="care-notdone">❌</span>'} ${care}
+                    </div>`;
+                }
+            });
+
+            html += `</div>`;
+        });
+
+        document.getElementById('rapportContent').innerHTML = html;
+
+        const shiftSelector = document.getElementById('rapportShiftSelector');
+        shiftSelector.innerHTML = database.shifts.map(shift => `
+            <button class="shift-btn ${shift.id === currentShift ? 'active' : ''}" onclick="switchRapportShift('${shift.id}')">
+                ${shift.name}
+            </button>
+        `).join('');
+    }
+
+    function switchRapportShift(shiftId) {
+        currentShift = shiftId;
+        renderRapport();
+    }
+
+    function filterRapportFloor(floor) {
+        rapportFloor = floor;
+        document.querySelectorAll('.floor-filter .shift-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        renderRapport();
+    }
+
+    function speakRapport() {
+        if (isSpeaking) return;
+        isSpeaking = true;
+
+        const text = document.getElementById('rapportContent').innerText;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-CA';
+        utterance.rate = 1;
+
+        utterance.onend = () => { isSpeaking = false; };
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeaking() {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
     }
 
     function renderShiftSelector() {
