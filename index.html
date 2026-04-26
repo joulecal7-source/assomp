@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASSOMP - Rapport de Transition</title>
+    <title>ASSOMP - Système de Suivi des Soins</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
@@ -64,7 +64,19 @@
         .care-table td { padding: 15px; border: 1px solid #ddd; text-align: center; }
         .care-table td:nth-child(2) { text-align: left; font-weight: 500; }
         .care-table input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; accent-color: #059669; }
-        .care-table input[type="checkbox"]:disabled { opacity: 1; cursor: not-allowed; }
+        
+        .notes-section { margin-top: 25px; padding: 20px; background: #f9f9f9; border-radius: 8px; border-left: 4px solid #f59e0b; }
+        .notes-section label { display: block; font-weight: 600; margin-bottom: 10px; font-size: 14px; }
+        .notes-section textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: Arial; min-height: 80px; resize: vertical; }
+        
+        .rapport-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .rapport-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #2563eb; }
+        .rapport-header h3 { color: #2563eb; margin-bottom: 10px; }
+        .audio-controls { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+        .audio-btn { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .audio-btn:hover { background: #1e40af; }
+        .audio-btn.stop { background: #dc2626; }
+        .print-btn { padding: 12px 20px; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         
         .reports-section { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .report-item { padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; margin-bottom: 10px; }
@@ -74,32 +86,21 @@
         .add-report-form input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
         .add-report-form button { padding: 10px 20px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         
-        .rapport-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .rapport-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #2563eb; }
-        .rapport-header h3 { color: #2563eb; margin-bottom: 10px; }
-        .patient-rapport { background: #f9f9f9; padding: 20px; margin-bottom: 20px; border-left: 4px solid #2563eb; border-radius: 6px; }
-        .patient-rapport h4 { color: #1e293b; margin-bottom: 12px; }
-        .care-item-rapport { padding: 10px; margin-bottom: 8px; background: white; border-radius: 4px; border-left: 3px solid #059669; }
-        .care-item-rapport.incomplete { border-left-color: #dc2626; }
-        .care-done { color: #059669; font-weight: 600; }
-        .care-notdone { color: #dc2626; font-weight: 600; }
-        .audio-controls { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
-        .audio-btn { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; }
-        .audio-btn:hover { background: #1e40af; }
-        .audio-btn.stop { background: #dc2626; }
-        .print-btn { padding: 12px 20px; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .tableau-bord { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .tableau-bord h3 { margin-bottom: 15px; color: #2563eb; }
+        .tableau-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 12px; background: #f9f9f9; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid #2563eb; }
+        .tableau-row.completed { border-left-color: #059669; }
+        .tableau-row.incomplete { border-left-color: #dc2626; }
         
         @media (max-width: 768px) {
             .app-container { grid-template-columns: 1fr; }
             .beneficiaries-grid { grid-template-columns: 1fr; }
             .modal-content { width: 95%; margin: 20% auto; }
-            .care-table { font-size: 12px; }
-            .care-table th, .care-table td { padding: 8px 4px; }
+            .tableau-row { grid-template-columns: 1fr; }
         }
         
         @media print {
-            .audio-controls, .logout-btn, .sidebar { display: none; }
-            .rapport-container { box-shadow: none; }
+            .audio-controls, .logout-btn, .sidebar, .nav-item { display: none; }
         }
     </style>
 </head>
@@ -146,7 +147,7 @@
     </div>
 
     <div class="main-content">
-        <!-- PAGE RAPPORT DE TRANSITION -->
+        <!-- PAGE RAPPORT TRANSITION PREPOSE -->
         <div id="rapportPage" class="page">
             <div class="page-header">
                 <h2>📋 Rapport de Transition</h2>
@@ -160,10 +161,9 @@
                 <div class="audio-controls">
                     <button class="audio-btn" onclick="speakRapport()">🔊 Écouter le rapport</button>
                     <button class="audio-btn stop" onclick="stopSpeaking()">⏹️ Arrêter</button>
-                    <button class="print-btn" onclick="window.print()">🖨️ Imprimer</button>
                 </div>
 
-                <div id="rapportContent"></div>
+                <div id="rapportContent" class="rapport-header"></div>
             </div>
 
             <div class="shift-selector" id="rapportShiftSelector"></div>
@@ -181,7 +181,7 @@
         <!-- PAGE SOINS PREPOSE -->
         <div id="preposeShiftPage" class="page">
             <div class="page-header">
-                <h2>📋 Enregistrement des Soins</h2>
+                <h2>📝 Enregistrement des Soins</h2>
                 <div style="font-size: 14px; color: #666;">
                     <strong id="userName"></strong><br>
                     <span id="userShift"></span>
@@ -216,28 +216,36 @@
             <div class="reports-section">
                 <h3 style="margin-bottom: 15px;">➕ Ajouter un Rapport</h3>
                 <div class="add-report-form">
-                    <input type="text" id="reportInput" placeholder="Ex: Patient A tombé à 20h | ...">
+                    <input type="text" id="reportInput" placeholder="Rapport important du shift...">
                     <button onclick="addReport()">Envoyer</button>
+                </div>
+                <div class="audio-controls" style="margin-top: 20px;">
+                    <button class="audio-btn" onclick="speakInfirmiereReports()">🔊 Écouter les rapports</button>
+                    <button class="audio-btn stop" onclick="stopSpeaking()">⏹️ Arrêter</button>
                 </div>
                 <div id="allReports" style="margin-top: 20px;"></div>
             </div>
         </div>
 
-        <!-- PAGE ADMIN -->
+        <!-- PAGE TABLEAU DE BORD ADMIN -->
         <div id="adminPage" class="page">
             <div class="page-header">
-                <h2>⚙️ Configuration Patients</h2>
+                <h2>📊 Tableau de Bord</h2>
                 <div style="font-size: 14px; color: #666;">
                     <strong id="adminName"></strong>
                 </div>
             </div>
 
-            <div id="adminGrid" class="beneficiaries-grid"></div>
+            <div class="audio-controls">
+                <button class="print-btn" onclick="window.print()">🖨️ Imprimer / PDF</button>
+            </div>
+
+            <div id="adminDashboard"></div>
         </div>
     </div>
 </div>
 
-<!-- MODAL PROFIL -->
+<!-- MODAL SOINS -->
 <div id="profileModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -248,6 +256,10 @@
             <span class="close-btn" onclick="closeProfileModal()">&times;</span>
         </div>
         <div id="modalCareItems"></div>
+        <div id="notesSection" class="notes-section" style="display:none;">
+            <label>📝 Notes Observations:</label>
+            <textarea id="patientNotes" placeholder="Ex: Patient a des rougeurs à la jambe gauche..."></textarea>
+        </div>
     </div>
 </div>
 
@@ -258,6 +270,7 @@
     let rapportFloor = 'all';
     let selectedRole = 'prepose';
     let isSpeaking = false;
+    let currentModalPatientId = null;
 
     const database = {
         users: {
@@ -402,7 +415,7 @@
     }
 
     function logout() {
-        if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+        if (confirm('Déconnecter?')) {
             currentUser = null;
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('appContainer').classList.add('hidden');
@@ -414,7 +427,7 @@
     function initPreposeView() {
         const navHTML = `
             <div class="nav-item active" onclick="showRapportPage()">📋 Rapport</div>
-            <div class="nav-item" onclick="showPreposeePage()">📝 Mes Soins</div>
+            <div class="nav-item" onclick="showPreposeePage()">📝 Soins</div>
         `;
         document.getElementById('navMenu').innerHTML = navHTML;
         document.getElementById('userName').textContent = currentUser.name;
@@ -429,22 +442,14 @@
     function showRapportPage() {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
         document.getElementById('rapportPage').classList.add('active');
-        updateRapportNav();
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.nav-item')[0].classList.add('active');
         renderRapport();
     }
 
     function showPreposeePage() {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
         document.getElementById('preposeShiftPage').classList.add('active');
-        updatePreposeNav();
-    }
-
-    function updateRapportNav() {
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        document.querySelectorAll('.nav-item')[0].classList.add('active');
-    }
-
-    function updatePreposeNav() {
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.querySelectorAll('.nav-item')[1].classList.add('active');
     }
@@ -456,27 +461,26 @@
 
         document.getElementById('rapportInfo').textContent = `Rapport du shift ${shiftNames[prevShift]} - ${today}`;
 
-        const beneficiariesToDisplay = rapportFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === rapportFloor);
+        let html = `<h3>À vérifier</h3><p>Ce qui n'a pas été complété lors du dernier shift:</p>`;
 
-        let html = `<div class="rapport-header"><h3>Rapport de Transition - ${shiftNames[prevShift]}</h3><p>Date: ${today}</p></div>`;
+        const beneficiariesToDisplay = rapportFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === rapportFloor);
 
         beneficiariesToDisplay.forEach(benef => {
             const adminReqs = getFromStorage(`patient_admin_${benef.id}`) || {};
             const prevShiftData = getFromStorage(`patient_prepose_${benef.id}_${prevShift}`) || {};
 
-            html += `<div class="patient-rapport">
-                <h4>${benef.name} - Lit ${benef.bed}</h4>`;
-
+            let incomplete = false;
+            let items = '';
             database.careRequirements.forEach((care, idx) => {
-                if (adminReqs[idx]) {
-                    const isDone = prevShiftData[idx];
-                    html += `<div class="care-item-rapport ${!isDone ? 'incomplete' : ''}">
-                        ${isDone ? '<span class="care-done">✅</span>' : '<span class="care-notdone">❌</span>'} ${care}
-                    </div>`;
+                if (adminReqs[idx] && !prevShiftData[idx]) {
+                    incomplete = true;
+                    items += `<div>• ${care}</div>`;
                 }
             });
 
-            html += `</div>`;
+            if (incomplete) {
+                html += `<div style="margin: 15px 0; padding: 15px; background: #fff3cd; border-radius: 6px;"><strong>${benef.name} (Lit ${benef.bed}):</strong>${items}</div>`;
+            }
         });
 
         document.getElementById('rapportContent').innerHTML = html;
@@ -496,9 +500,7 @@
 
     function filterRapportFloor(floor) {
         rapportFloor = floor;
-        document.querySelectorAll('.floor-filter .shift-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
+        document.querySelectorAll('.floor-filter .shift-btn').forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
         renderRapport();
     }
@@ -506,12 +508,10 @@
     function speakRapport() {
         if (isSpeaking) return;
         isSpeaking = true;
-
         const text = document.getElementById('rapportContent').innerText;
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'fr-CA';
         utterance.rate = 1;
-
         utterance.onend = () => { isSpeaking = false; };
         window.speechSynthesis.speak(utterance);
     }
@@ -558,16 +558,19 @@
     function renderBeneficiaries() {
         const grid = document.getElementById('beneficiariesGrid');
         const beneficiariesToDisplay = currentFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === currentFloor);
-        grid.innerHTML = beneficiariesToDisplay.map(benef => `<div class="beneficiary-card" onclick="openProfileModal('${benef.id}')"><div class="beneficiary-header"><div class="beneficiary-info"><div class="beneficiary-name">${benef.name}</div><div class="beneficiary-id">ID: ${benef.id}</div></div><div class="bed-info"><div class="bed-number">🛏️ ${benef.bed}</div><div class="floor-badge">🏢 Étage ${benef.floor}</div></div></div><p style="font-size: 12px; color: #666; margin-top: 10px;">👆 Clique pour voir les soins</p></div>`).join('');
+        grid.innerHTML = beneficiariesToDisplay.map(benef => `<div class="beneficiary-card" onclick="openProfileModal('${benef.id}')"><div class="beneficiary-header"><div class="beneficiary-info"><div class="beneficiary-name">${benef.name}</div><div class="beneficiary-id">ID: ${benef.id}</div></div><div class="bed-info"><div class="bed-number">🛏️ ${benef.bed}</div><div class="floor-badge">🏢 Étage ${benef.floor}</div></div></div></div>`).join('');
     }
 
     function openProfileModal(benefId) {
+        currentModalPatientId = benefId;
         const benef = database.beneficiaries.find(b => b.id === benefId);
         const adminRequirements = getFromStorage(`patient_admin_${benefId}`) || {};
         const preposeVerification = getFromStorage(`patient_prepose_${benefId}_${currentShift}`) || {};
+        const patientNotes = getFromStorage(`patient_notes_${benefId}_${currentShift}`) || '';
 
         document.getElementById('modalPatientName').textContent = benef.name;
         document.getElementById('modalPatientInfo').textContent = `Lit: ${benef.bed} | Étage ${benef.floor}`;
+        document.getElementById('patientNotes').value = patientNotes;
 
         let tableHTML = '<table class="care-table"><thead><tr><th>ADMIN</th><th>SOINS & ÉQUIPEMENTS</th><th>PRÉPOSÉ</th></tr></thead><tbody>';
         
@@ -581,6 +584,7 @@
 
         tableHTML += '</tbody></table>';
         document.getElementById('modalCareItems').innerHTML = tableHTML;
+        document.getElementById('notesSection').style.display = 'block';
         document.getElementById('profileModal').classList.add('active');
     }
 
@@ -592,7 +596,12 @@
     }
 
     function closeProfileModal() {
+        if (currentModalPatientId) {
+            const notes = document.getElementById('patientNotes').value;
+            saveToStorage(`patient_notes_${currentModalPatientId}_${currentShift}`, notes);
+        }
         document.getElementById('profileModal').classList.remove('active');
+        currentModalPatientId = null;
     }
 
     function initInfirmiereView() {
@@ -627,17 +636,27 @@
         const container = document.getElementById('allReports');
         const reports = getFromStorage('reports') || [];
         if (reports.length === 0) {
-            container.innerHTML = '<p style="color: #666;">Aucun rapport pour le moment</p>';
+            container.innerHTML = '<p style="color: #666;">Aucun rapport</p>';
             return;
         }
-        container.innerHTML = '<h3 style="margin-bottom: 15px;">Tous les Rapports</h3>' + reports.map(report => `<div class="report-item"><div class="report-time">${report.time}</div><div class="report-text">${report.text}</div></div>`).join('');
+        container.innerHTML = reports.map(report => `<div class="report-item"><div class="report-time">${report.time}</div><div class="report-text">${report.text}</div></div>`).join('');
+    }
+
+    function speakInfirmiereReports() {
+        if (isSpeaking) return;
+        isSpeaking = true;
+        const text = document.getElementById('allReports').innerText;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-CA';
+        utterance.onend = () => { isSpeaking = false; };
+        window.speechSynthesis.speak(utterance);
     }
 
     function initAdminView() {
-        document.getElementById('navMenu').innerHTML = '<div class="nav-item active" onclick="showAdminPage()">⚙️ Config</div>';
+        document.getElementById('navMenu').innerHTML = '<div class="nav-item active" onclick="showAdminPage()">📊 Tableau Bord</div>';
         document.getElementById('adminName').textContent = currentUser.name;
         showAdminPage();
-        renderAdminGrid();
+        renderAdminDashboard();
     }
 
     function showAdminPage() {
@@ -645,37 +664,50 @@
         document.getElementById('adminPage').classList.add('active');
     }
 
-    function renderAdminGrid() {
-        const grid = document.getElementById('adminGrid');
-        grid.innerHTML = database.beneficiaries.map(benef => `<div class="beneficiary-card" onclick="openAdminProfileModal('${benef.id}')"><div class="beneficiary-header"><div class="beneficiary-info"><div class="beneficiary-name">${benef.name}</div><div class="beneficiary-id">ID: ${benef.id}</div></div><div class="bed-info"><div class="bed-number">🛏️ ${benef.bed}</div><div class="floor-badge">🏢 Étage ${benef.floor}</div></div></div><p style="font-size: 12px; color: #666; margin-top: 10px;">👆 Clique pour configurer</p></div>`).join('');
-    }
+    function renderAdminDashboard() {
+        const today = new Date().toLocaleDateString('fr-CA');
+        let html = `<h3>Récapitulatif du ${today}</h3>`;
 
-    function openAdminProfileModal(benefId) {
-        const benef = database.beneficiaries.find(b => b.id === benefId);
-        const requirements = getFromStorage(`patient_admin_${benefId}`) || {};
+        database.shifts.forEach(shift => {
+            html += `<div class="tableau-bord"><h3>${shift.name}</h3>`;
 
-        document.getElementById('modalPatientName').textContent = benef.name + ' (Configuration)';
-        document.getElementById('modalPatientInfo').textContent = `Lit: ${benef.bed} | Étage ${benef.floor}`;
+            database.beneficiaries.forEach(benef => {
+                const adminReqs = getFromStorage(`patient_admin_${benef.id}`) || {};
+                const shiftData = getFromStorage(`patient_prepose_${benef.id}_${shift.id}`) || {};
+                const notes = getFromStorage(`patient_notes_${benef.id}_${shift.id}`) || '';
 
-        let tableHTML = '<table class="care-table"><thead><tr><th colspan="2" style="text-align: center;">COCHER LES SOINS REQUIS</th></tr></thead><tbody>';
-        
-        database.careRequirements.forEach((care, idx) => {
-            tableHTML += '<tr>';
-            tableHTML += `<td style="width: 10%;"><input type="checkbox" id="admin_config_${benefId}_${idx}" ${requirements[idx] ? 'checked' : ''} onchange="updateAdminRequirement('${benefId}', ${idx})"></td>`;
-            tableHTML += `<td style="text-align: left;">${care}</td>`;
-            tableHTML += '</tr>';
+                let completed = 0;
+                let total = 0;
+                let items = '';
+
+                database.careRequirements.forEach((care, idx) => {
+                    if (adminReqs[idx]) {
+                        total++;
+                        if (shiftData[idx]) {
+                            completed++;
+                            items += `<div>✅ ${care}</div>`;
+                        } else {
+                            items += `<div>❌ ${care}</div>`;
+                        }
+                    }
+                });
+
+                if (total > 0) {
+                    const percent = Math.round((completed / total) * 100);
+                    const rowClass = completed === total ? 'completed' : 'incomplete';
+                    html += `<div class="tableau-row ${rowClass}">
+                        <div><strong>${benef.name}</strong><br>Lit ${benef.bed}</div>
+                        <div>${completed}/${total} (${percent}%)</div>
+                        <div>${items}</div>
+                        <div>${notes ? `<strong>Notes:</strong> ${notes}` : ''}</div>
+                    </div>`;
+                }
+            });
+
+            html += `</div>`;
         });
 
-        tableHTML += '</tbody></table>';
-        document.getElementById('modalCareItems').innerHTML = tableHTML;
-        document.getElementById('profileModal').classList.add('active');
-    }
-
-    function updateAdminRequirement(benefId, idx) {
-        const checkbox = document.getElementById(`admin_config_${benefId}_${idx}`);
-        const requirements = getFromStorage(`patient_admin_${benefId}`) || {};
-        requirements[idx] = checkbox.checked;
-        saveToStorage(`patient_admin_${benefId}`, requirements);
+        document.getElementById('adminDashboard').innerHTML = html;
     }
 
     window.addEventListener('load', () => {
