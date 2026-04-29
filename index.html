@@ -702,7 +702,45 @@ window.addEventListener('load', () => {
 
 window.onclick = function(e) {
     if (e.target == document.getElementById('profileModal')) closeProfileModal();
+function showAdminConfigPage() {
+    showPage('adminConfigPage', 1);
+    renderConfigGrid();
 }
+let configFloor='all';
+let currentConfigPatientId=null;
+function filterConfigFloor(floor,btn){
+    configFloor=floor;
+    if(btn){btn.closest('.floor-filter').querySelectorAll('.shift-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+    renderConfigGrid();
+}
+function renderConfigGrid(){
+    const list=configFloor==='all'?database.beneficiaries:database.beneficiaries.filter(b=>b.floor===configFloor);
+    document.getElementById('configGrid').innerHTML=list.map(b=>`<div class="beneficiary-card" onclick="openConfigModal('${b.id}')"><div class="beneficiary-header"><div><div class="beneficiary-name">${b.name}</div></div><div class="bed-info"><div class="bed-number">🛏️ ${b.bed}</div><div class="floor-badge">🏢 Étage ${b.floor}</div></div></div></div>`).join('');
+}
+async function openConfigModal(benefId){
+    currentConfigPatientId=benefId;
+    const benef=database.beneficiaries.find(b=>b.id===benefId);
+    const adminReqs=await fbGet(`admin_reqs/${benefId}`)||{};
+    document.getElementById('configModalPatientName').textContent=benef.name;
+    document.getElementById('configModalPatientInfo').textContent=`Lit: ${benef.bed} | Étage ${benef.floor}`;
+    let html='<table class="care-table"><thead><tr><th style="color:#dc2626;">REQUIS</th><th>SOINS</th></tr></thead><tbody>';
+    database.careRequirements.forEach((care,idx)=>{html+=`<tr><td><input type="checkbox" id="cfg_${benefId}_${idx}" ${adminReqs[idx]?'checked':''}></td><td>${care}</td></tr>`;});
+    html+='</tbody></table>';
+    document.getElementById('configCareItems').innerHTML=html;
+    document.getElementById('adminConfigModal').classList.add('active');
+}
+async function saveAdminConfig(){
+    if(!currentConfigPatientId)return;
+    const reqs={};
+    database.careRequirements.forEach((care,idx)=>{const cb=document.getElementById(`cfg_${currentConfigPatientId}_${idx}`);if(cb&&cb.checked)reqs[idx]=true;});
+    await fbSet(`admin_reqs/${currentConfigPatientId}`,reqs);
+    alert('✅ Configuration sauvegardée !');
+    closeConfigModal();
+}
+function closeConfigModal(){
+    document.getElementById('adminConfigModal').classList.remove('active');
+    currentConfigPatientId=null;
+}}
 </script>
 </body>
 </html>
