@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASSOMP - Système de Suivi des Soins</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
@@ -19,7 +14,7 @@
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
         .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px; }
+        .btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
         
         .role-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .role-btn { padding: 12px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
@@ -73,7 +68,6 @@
         .notes-section { margin-top: 25px; padding: 20px; background: #f9f9f9; border-radius: 8px; border-left: 4px solid #f59e0b; }
         .notes-section label { display: block; font-weight: 600; margin-bottom: 10px; font-size: 14px; }
         .notes-section textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: Arial; min-height: 80px; resize: vertical; }
-        .save-notes-btn { margin-top: 10px; padding: 10px 20px; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         
         .rapport-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .rapport-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #2563eb; }
@@ -97,9 +91,6 @@
         .tableau-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 12px; background: #f9f9f9; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid #2563eb; }
         .tableau-row.completed { border-left-color: #059669; }
         .tableau-row.incomplete { border-left-color: #dc2626; }
-
-        .loading { text-align: center; padding: 20px; color: #666; font-size: 16px; }
-        .sync-indicator { position: fixed; bottom: 20px; right: 20px; background: #059669; color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: none; z-index: 9999; }
         
         @media (max-width: 768px) {
             .app-container { grid-template-columns: 1fr; }
@@ -115,8 +106,6 @@
 </head>
 <body>
 
-<div class="sync-indicator" id="syncIndicator">✅ Sauvegardé</div>
-
 <div id="loginPage" class="login-container">
     <div class="login-box">
         <h1>🏥 ASSOMP</h1>
@@ -124,9 +113,9 @@
 
         <label style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px;">Rôle:</label>
         <div class="role-selector">
-            <div class="role-btn active" onclick="selectRole('prepose', this)">👤 Préposé</div>
-            <div class="role-btn" onclick="selectRole('infirmiere', this)">👩‍⚕️ Infirmière</div>
-            <div class="role-btn" onclick="selectRole('admin', this)">👨‍💼 Admin</div>
+            <div class="role-btn active" onclick="selectRole('prepose')">👤 Préposé</div>
+            <div class="role-btn" onclick="selectRole('infirmiere')">👩‍⚕️ Infirmière</div>
+            <div class="role-btn" onclick="selectRole('admin')">👨‍💼 Admin</div>
         </div>
 
         <div class="form-group">
@@ -158,6 +147,7 @@
     </div>
 
     <div class="main-content">
+        <!-- PAGE RAPPORT TRANSITION PREPOSE -->
         <div id="rapportPage" class="page">
             <div class="page-header">
                 <h2>📋 Rapport de Transition</h2>
@@ -166,24 +156,29 @@
                     <span id="rapportInfo"></span>
                 </div>
             </div>
+
             <div class="rapport-container">
                 <div class="audio-controls">
                     <button class="audio-btn" onclick="speakRapport()">🔊 Écouter le rapport</button>
                     <button class="audio-btn stop" onclick="stopSpeaking()">⏹️ Arrêter</button>
                 </div>
+
                 <div id="rapportContent" class="rapport-header"></div>
             </div>
+
             <div class="shift-selector" id="rapportShiftSelector"></div>
+
             <div class="floor-filter">
                 <label>🏢 Filtrer par Étage:</label>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-                    <button class="shift-btn active" onclick="filterRapportFloor('all', this)">📋 Tous</button>
-                    <button class="shift-btn" onclick="filterRapportFloor(2, this)">🏢 Étage 2</button>
-                    <button class="shift-btn" onclick="filterRapportFloor(3, this)">🏢 Étage 3</button>
+                    <button class="shift-btn active" onclick="filterRapportFloor('all')">📋 Tous</button>
+                    <button class="shift-btn" onclick="filterRapportFloor(2)">🏢 Étage 2</button>
+                    <button class="shift-btn" onclick="filterRapportFloor(3)">🏢 Étage 3</button>
                 </div>
             </div>
         </div>
 
+        <!-- PAGE SOINS PREPOSE -->
         <div id="preposeShiftPage" class="page">
             <div class="page-header">
                 <h2>📝 Enregistrement des Soins</h2>
@@ -192,19 +187,24 @@
                     <span id="userShift"></span>
                 </div>
             </div>
+
             <div id="reportsDisplay" class="reports-section"></div>
+
             <div class="shift-selector" id="shiftSelector"></div>
+
             <div class="floor-filter">
                 <label>🏢 Filtrer par Étage:</label>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-                    <button class="shift-btn active" onclick="filterFloor('all', this)">📋 Tous</button>
-                    <button class="shift-btn" onclick="filterFloor(2, this)">🏢 Étage 2</button>
-                    <button class="shift-btn" onclick="filterFloor(3, this)">🏢 Étage 3</button>
+                    <button class="shift-btn active" onclick="filterFloor('all')">📋 Tous</button>
+                    <button class="shift-btn" onclick="filterFloor(2)">🏢 Étage 2</button>
+                    <button class="shift-btn" onclick="filterFloor(3)">🏢 Étage 3</button>
                 </div>
             </div>
+
             <div class="beneficiaries-grid" id="beneficiariesGrid"></div>
         </div>
 
+        <!-- PAGE RAPPORTS INFIRMIERE -->
         <div id="infirmiereReportsPage" class="page">
             <div class="page-header">
                 <h2>📝 Rapports Importants</h2>
@@ -212,6 +212,7 @@
                     <strong id="infirmiereName"></strong>
                 </div>
             </div>
+
             <div class="reports-section">
                 <h3 style="margin-bottom: 15px;">➕ Ajouter un Rapport</h3>
                 <div class="add-report-form">
@@ -226,6 +227,7 @@
             </div>
         </div>
 
+        <!-- PAGE TABLEAU DE BORD ADMIN -->
         <div id="adminPage" class="page">
             <div class="page-header">
                 <h2>📊 Tableau de Bord</h2>
@@ -233,14 +235,17 @@
                     <strong id="adminName"></strong>
                 </div>
             </div>
+
             <div class="audio-controls">
                 <button class="print-btn" onclick="window.print()">🖨️ Imprimer / PDF</button>
             </div>
+
             <div id="adminDashboard"></div>
         </div>
     </div>
 </div>
 
+<!-- MODAL SOINS -->
 <div id="profileModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -254,493 +259,468 @@
         <div id="notesSection" class="notes-section" style="display:none;">
             <label>📝 Notes Observations:</label>
             <textarea id="patientNotes" placeholder="Ex: Patient a des rougeurs à la jambe gauche..."></textarea>
-            <button class="save-notes-btn" onclick="saveNotes()">💾 Sauvegarder les notes</button>
         </div>
     </div>
 </div>
 
 <script>
-// =============================================
-// CONFIGURATION FIREBASE
-// =============================================
-const firebaseConfig = {
-    databaseURL: "https://assomp-18efe-default-rtdb.firebaseio.com"
-};
+    let currentUser = null;
+    let currentShift = 'matin';
+    let currentFloor = 'all';
+    let rapportFloor = 'all';
+    let selectedRole = 'prepose';
+    let isSpeaking = false;
+    let currentModalPatientId = null;
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+    const database = {
+        users: {
+            'PREP001': { password: '1234', name: 'Marie Dupont', role: 'prepose' },
+            'PREP002': { password: '1234', name: 'Jean Martin', role: 'prepose' },
+            'INF001': { password: '1234', name: 'Sophie Bernard', role: 'infirmiere' },
+            'ADMIN001': { password: '1234', name: 'Pierre Rousseau', role: 'admin' }
+        },
+        careRequirements: [
+            'Porte dentier 🦷', 'Porte appareils auditifs 👂', 'Porte lunettes 👓',
+            'Utilise marchette 🚶', 'Utilise chaise roulante ♿', 'Se déplace en pivot 🔄',
+            'Se déplace avec lève-personnes 🏋️', 'Se déplace avec Sara 🪑', 'Marche 🚶',
+            'Mange seul 🍴', 'Aide à manger 🥄', 'Bain partiel 🚿', 'Bain complet 🛁',
+            'Liquide miel 🍯', 'Liquide nectar 🧃', 'Liquide clair 💧', 'Diète purée 🥣',
+            'Diète normale 🍽️', 'Ceinture de marche 🎽', 'Tags sur fauteuil 🏷️', 'Tags au lit 🏷️',
+            'Tapis de chute 🛏️', 'Chaise d\'aisance 🪑', 'Selle 🚽'
+        ],
+        beneficiaries: [
+            { id: 'B001', name: 'Patient 201', bed: '201', floor: 2 },
+            { id: 'B002', name: 'Patient 202', bed: '202', floor: 2 },
+            { id: 'B003', name: 'Patient 203', bed: '203', floor: 2 },
+            { id: 'B004', name: 'Patient 204', bed: '204', floor: 2 },
+            { id: 'B005', name: 'Patient 205', bed: '205', floor: 2 },
+            { id: 'B006', name: 'Patient 206A', bed: '206A', floor: 2 },
+            { id: 'B007', name: 'Patient 206B', bed: '206B', floor: 2 },
+            { id: 'B008', name: 'Patient 207A', bed: '207A', floor: 2 },
+            { id: 'B009', name: 'Patient 207B', bed: '207B', floor: 2 },
+            { id: 'B010', name: 'Patient 208A', bed: '208A', floor: 2 },
+            { id: 'B011', name: 'Patient 208B', bed: '208B', floor: 2 },
+            { id: 'B012', name: 'Patient 209A', bed: '209A', floor: 2 },
+            { id: 'B013', name: 'Patient 209B', bed: '209B', floor: 2 },
+            { id: 'B014', name: 'Patient 210A', bed: '210A', floor: 2 },
+            { id: 'B015', name: 'Patient 210B', bed: '210B', floor: 2 },
+            { id: 'B016', name: 'Patient 211A', bed: '211A', floor: 2 },
+            { id: 'B017', name: 'Patient 211B', bed: '211B', floor: 2 },
+            { id: 'B018', name: 'Patient 2014A', bed: '2014A', floor: 2 },
+            { id: 'B019', name: 'Patient 2014B', bed: '2014B', floor: 2 },
+            { id: 'B020', name: 'Patient 2015A', bed: '2015A', floor: 2 },
+            { id: 'B021', name: 'Patient 2015B', bed: '2015B', floor: 2 },
+            { id: 'B022', name: 'Patient 2016A', bed: '2016A', floor: 2 },
+            { id: 'B023', name: 'Patient 2016B', bed: '2016B', floor: 2 },
+            { id: 'B024', name: 'Patient 2017A', bed: '2017A', floor: 2 },
+            { id: 'B025', name: 'Patient 2017B', bed: '2017B', floor: 2 },
+            { id: 'B026', name: 'Patient 2018A', bed: '2018A', floor: 2 },
+            { id: 'B027', name: 'Patient 2018B', bed: '2018B', floor: 2 },
+            { id: 'B028', name: 'Patient 2019A', bed: '2019A', floor: 2 },
+            { id: 'B029', name: 'Patient 2019B', bed: '2019B', floor: 2 },
+            { id: 'B030', name: 'Patient 2020A', bed: '2020A', floor: 2 },
+            { id: 'B031', name: 'Patient 2020B', bed: '2020B', floor: 2 },
+            { id: 'B032', name: 'Patient 2021A', bed: '2021A', floor: 2 },
+            { id: 'B033', name: 'Patient 2021B', bed: '2021B', floor: 2 },
+            { id: 'B034', name: 'Patient 2022A', bed: '2022A', floor: 2 },
+            { id: 'B035', name: 'Patient 2022B', bed: '2022B', floor: 2 },
+            { id: 'B036', name: 'Patient 2023A', bed: '2023A', floor: 2 },
+            { id: 'B037', name: 'Patient 2023B', bed: '2023B', floor: 2 },
+            { id: 'B038', name: 'Patient 301', bed: '301', floor: 3 },
+            { id: 'B039', name: 'Patient 302', bed: '302', floor: 3 },
+            { id: 'B040', name: 'Patient 303', bed: '303', floor: 3 },
+            { id: 'B041', name: 'Patient 304', bed: '304', floor: 3 },
+            { id: 'B042', name: 'Patient 305', bed: '305', floor: 3 },
+            { id: 'B043', name: 'Patient 306A', bed: '306A', floor: 3 },
+            { id: 'B044', name: 'Patient 306B', bed: '306B', floor: 3 },
+            { id: 'B045', name: 'Patient 307A', bed: '307A', floor: 3 },
+            { id: 'B046', name: 'Patient 307B', bed: '307B', floor: 3 },
+            { id: 'B047', name: 'Patient 308A', bed: '308A', floor: 3 },
+            { id: 'B048', name: 'Patient 308B', bed: '308B', floor: 3 },
+            { id: 'B049', name: 'Patient 309A', bed: '309A', floor: 3 },
+            { id: 'B050', name: 'Patient 309B', bed: '309B', floor: 3 },
+            { id: 'B051', name: 'Patient 310A', bed: '310A', floor: 3 },
+            { id: 'B052', name: 'Patient 310B', bed: '310B', floor: 3 },
+            { id: 'B053', name: 'Patient 311A', bed: '311A', floor: 3 },
+            { id: 'B054', name: 'Patient 311B', bed: '311B', floor: 3 },
+            { id: 'B055', name: 'Patient 312A', bed: '312A', floor: 3 },
+            { id: 'B056', name: 'Patient 312B', bed: '312B', floor: 3 },
+            { id: 'B057', name: 'Patient 313A', bed: '313A', floor: 3 },
+            { id: 'B058', name: 'Patient 313B', bed: '313B', floor: 3 },
+            { id: 'B059', name: 'Patient 314A', bed: '314A', floor: 3 },
+            { id: 'B060', name: 'Patient 314B', bed: '314B', floor: 3 },
+            { id: 'B061', name: 'Patient 315A', bed: '315A', floor: 3 },
+            { id: 'B062', name: 'Patient 315B', bed: '315B', floor: 3 },
+            { id: 'B063', name: 'Patient 316A', bed: '316A', floor: 3 },
+            { id: 'B064', name: 'Patient 316B', bed: '316B', floor: 3 },
+            { id: 'B065', name: 'Patient 317A', bed: '317A', floor: 3 },
+            { id: 'B066', name: 'Patient 317B', bed: '317B', floor: 3 },
+            { id: 'B067', name: 'Patient 318A', bed: '318A', floor: 3 },
+            { id: 'B068', name: 'Patient 318B', bed: '318B', floor: 3 },
+            { id: 'B069', name: 'Patient 319A', bed: '319A', floor: 3 },
+            { id: 'B070', name: 'Patient 319B', bed: '319B', floor: 3 },
+            { id: 'B071', name: 'Patient 320A', bed: '320A', floor: 3 },
+            { id: 'B072', name: 'Patient 320B', bed: '320B', floor: 3 },
+            { id: 'B073', name: 'Patient 321A', bed: '321A', floor: 3 },
+            { id: 'B074', name: 'Patient 321B', bed: '321B', floor: 3 },
+            { id: 'B075', name: 'Patient 322A', bed: '322A', floor: 3 },
+            { id: 'B076', name: 'Patient 322B', bed: '322B', floor: 3 },
+            { id: 'B077', name: 'Patient 323A', bed: '323A', floor: 3 },
+            { id: 'B078', name: 'Patient 323B', bed: '323B', floor: 3 },
+            { id: 'B079', name: 'Patient 324A', bed: '324A', floor: 3 },
+            { id: 'B080', name: 'Patient 324B', bed: '324B', floor: 3 },
+            { id: 'B081', name: 'Patient 325A', bed: '325A', floor: 3 },
+            { id: 'B082', name: 'Patient 325B', bed: '325B', floor: 3 },
+            { id: 'B083', name: 'Patient 3027A', bed: '3027A', floor: 3 },
+            { id: 'B084', name: 'Patient 3027B', bed: '3027B', floor: 3 }
+        ],
+        shifts: [
+            { id: 'matin', name: 'Matin (06h-14h)' },
+            { id: 'midi', name: 'Midi (14h-22h)' },
+            { id: 'soir', name: 'Soir (22h-06h)' }
+        ]
+    };
 
-// =============================================
-// VARIABLES GLOBALES
-// =============================================
-let currentUser = null;
-let currentShift = 'matin';
-let currentFloor = 'all';
-let rapportFloor = 'all';
-let selectedRole = 'prepose';
-let isSpeaking = false;
-let currentModalPatientId = null;
-let cachedData = {};
-
-// =============================================
-// DONNÉES DE L'APPLICATION
-// =============================================
-const database = {
-    users: {
-        'PREP001': { password: '1234', name: 'Marie Dupont', role: 'prepose' },
-        'PREP002': { password: '1234', name: 'Jean Martin', role: 'prepose' },
-        'INF001': { password: '1234', name: 'Sophie Bernard', role: 'infirmiere' },
-        'ADMIN001': { password: '1234', name: 'Pierre Rousseau', role: 'admin' }
-    },
-    careRequirements: [
-        'Porte dentier 🦷', 'Porte appareils auditifs 👂', 'Porte lunettes 👓',
-        'Utilise marchette 🚶', 'Utilise chaise roulante ♿', 'Se déplace en pivot 🔄',
-        'Se déplace avec lève-personnes 🏋️', 'Se déplace avec Sara 🪑', 'Marche 🚶',
-        'Mange seul 🍴', 'Aide à manger 🥄', 'Bain partiel 🚿', 'Bain complet 🛁',
-        'Liquide miel 🍯', 'Liquide nectar 🧃', 'Liquide clair 💧', 'Diète purée 🥣',
-        'Diète normale 🍽️', 'Ceinture de marche 🎽', 'Tags sur fauteuil 🏷️', 'Tags au lit 🏷️',
-        'Tapis de chute 🛏️', 'Chaise d\'aisance 🪑', 'Selle 🚽'
-    ],
-    beneficiaries: generateBeneficiaries(),
-    shifts: [
-        { id: 'matin', name: 'Matin (06h-14h)' },
-        { id: 'midi', name: 'Midi (14h-22h)' },
-        { id: 'soir', name: 'Soir (22h-06h)' }
-    ]
-};
-
-function generateBeneficiaries() {
-    const list = [];
-    let id = 1;
-    // Étage 2 chambres simples
-    for (let i = 201; i <= 205; i++) {
-        list.push({ id: 'B' + String(id++).padStart(3,'0'), name: 'Patient ' + i, bed: '' + i, floor: 2 });
+    function saveToStorage(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { }
     }
-    // Étage 2 chambres doubles
-    const e2doubles = [206,207,208,209,210,211,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023];
-    e2doubles.forEach(n => {
-        list.push({ id: 'B' + String(id++).padStart(3,'0'), name: 'Patient ' + n + 'A', bed: n + 'A', floor: 2 });
-        list.push({ id: 'B' + String(id++).padStart(3,'0'), name: 'Patient ' + n + 'B', bed: n + 'B', floor: 2 });
-    });
-    // Étage 3 chambres simples
-    for (let i = 301; i <= 305; i++) {
-        list.push({ id: 'B' + String(id++).padStart(3,'0'), name: 'Patient ' + i, bed: '' + i, floor: 3 });
+
+    function getFromStorage(key) {
+        try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : null; } catch (e) { return null; }
     }
-    // Étage 3 chambres doubles
-    const e3doubles = [306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,3027];
-    e3doubles.forEach(n => {
-        list.push({ id: 'B' + String(id++).padStart(3,'0'), name: 'Patient ' + n + 'A', bed: n + 'A', floor: 3 });
-        list.push({ id: 'B' + String(id++).padStart(3,'0'), name: 'Patient ' + n + 'B', bed: n + 'B', floor: 3 });
-    });
-    return list;
-}
 
-// =============================================
-// FIREBASE - LECTURE ET ÉCRITURE
-// =============================================
-function showSync() {
-    const el = document.getElementById('syncIndicator');
-    el.style.display = 'block';
-    setTimeout(() => { el.style.display = 'none'; }, 2000);
-}
-
-async function fbSet(path, value) {
-    await db.ref(path).set(value);
-    showSync();
-}
-
-async function fbGet(path) {
-    const snap = await db.ref(path).once('value');
-    return snap.val();
-}
-
-function fbListen(path, callback) {
-    db.ref(path).on('value', snap => callback(snap.val()));
-}
-
-// =============================================
-// AUTHENTIFICATION
-// =============================================
-function selectRole(role, btn) {
-    selectedRole = role;
-    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-}
-
-async function login() {
-    const userId = document.getElementById('userId').value.trim();
-    const password = document.getElementById('password').value;
-    if (!userId || !password) { alert('❌ Veuillez entrer votre ID et mot de passe'); return; }
-    const user = database.users[userId];
-    if (!user || user.password !== password) { alert('❌ ID ou mot de passe incorrect'); return; }
-    if (user.role !== selectedRole) { alert('❌ Rôle sélectionné incorrect'); return; }
-    currentUser = { id: userId, ...user };
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('appContainer').classList.remove('hidden');
-    if (user.role === 'prepose') initPreposeView();
-    else if (user.role === 'infirmiere') initInfirmiereView();
-    else if (user.role === 'admin') initAdminView();
-}
-
-function logout() {
-    if (confirm('Déconnecter?')) {
-        currentUser = null;
-        document.getElementById('loginPage').classList.remove('hidden');
-        document.getElementById('appContainer').classList.add('hidden');
-        document.getElementById('userId').value = '';
-        document.getElementById('password').value = '';
+    function selectRole(role) {
+        selectedRole = role;
+        document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
     }
-}
 
-// =============================================
-// VUE PRÉPOSÉ
-// =============================================
-function initPreposeView() {
-    document.getElementById('navMenu').innerHTML = `
-        <div class="nav-item active" onclick="showRapportPage()">📋 Rapport</div>
-        <div class="nav-item" onclick="showPreposeePage()">📝 Soins</div>
-    `;
-    document.getElementById('userName').textContent = currentUser.name;
-    document.getElementById('rapportUserName').textContent = currentUser.name;
-    showRapportPage();
-    renderShiftSelector();
-    listenToReports();
-}
+    function login() {
+        const userId = document.getElementById('userId').value.trim();
+        const password = document.getElementById('password').value;
 
-function showRapportPage() {
-    showPage('rapportPage', 0);
-    renderRapport();
-}
+        if (!userId || !password) { alert('❌ Veuillez entrer votre ID et mot de passe'); return; }
 
-function showPreposeePage() {
-    showPage('preposeShiftPage', 1);
-    renderBeneficiaries();
-}
+        const user = database.users[userId];
+        if (!user || user.password !== password) { alert('❌ ID ou mot de passe incorrect'); return; }
+        if (user.role !== selectedRole) { alert('❌ Rôle sélectionné incorrect'); return; }
 
-async function renderRapport() {
-    const prevShift = currentShift === 'matin' ? 'soir' : currentShift === 'midi' ? 'matin' : 'midi';
-    const shiftNames = { matin: 'Matin (06h-14h)', midi: 'Midi (14h-22h)', soir: 'Soir (22h-06h)' };
-    const today = new Date().toLocaleDateString('fr-CA');
-    document.getElementById('rapportInfo').textContent = `Rapport du shift ${shiftNames[prevShift]} - ${today}`;
+        currentUser = { id: userId, ...user };
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
 
-    let html = `<h3>À vérifier du shift précédent</h3>`;
-    const beneficiariesToDisplay = rapportFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === rapportFloor);
+        if (user.role === 'prepose') initPreposeView();
+        else if (user.role === 'infirmiere') initInfirmiereView();
+        else if (user.role === 'admin') initAdminView();
+    }
 
-    for (const benef of beneficiariesToDisplay) {
-        const adminReqs = await fbGet(`admin_reqs/${benef.id}`) || {};
-        const prevShiftData = await fbGet(`soins/${benef.id}/${prevShift}`) || {};
-        let incomplete = false;
-        let items = '';
-        database.careRequirements.forEach((care, idx) => {
-            if (adminReqs[idx] && !prevShiftData[idx]) {
-                incomplete = true;
-                items += `<div>• ${care}</div>`;
-            }
-        });
-        if (incomplete) {
-            html += `<div style="margin:15px 0;padding:15px;background:#fff3cd;border-radius:6px;"><strong>${benef.name} (Lit ${benef.bed}):</strong>${items}</div>`;
+    function logout() {
+        if (confirm('Déconnecter?')) {
+            currentUser = null;
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('appContainer').classList.add('hidden');
+            document.getElementById('userId').value = '';
+            document.getElementById('password').value = '';
         }
     }
-    if (html === `<h3>À vérifier du shift précédent</h3>`) {
-        html += `<p style="color:#059669;margin-top:15px;">✅ Tous les soins du shift précédent ont été complétés !</p>`;
+
+    function initPreposeView() {
+        const navHTML = `
+            <div class="nav-item active" onclick="showRapportPage()">📋 Rapport</div>
+            <div class="nav-item" onclick="showPreposeePage()">📝 Soins</div>
+        `;
+        document.getElementById('navMenu').innerHTML = navHTML;
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('rapportUserName').textContent = currentUser.name;
+        showRapportPage();
+        renderRapport();
+        renderShiftSelector();
+        renderReports();
+        renderBeneficiaries();
     }
-    document.getElementById('rapportContent').innerHTML = html;
 
-    document.getElementById('rapportShiftSelector').innerHTML = database.shifts.map(s => `
-        <button class="shift-btn ${s.id === currentShift ? 'active' : ''}" onclick="switchRapportShift('${s.id}', this)">${s.name}</button>
-    `).join('');
-}
-
-function switchRapportShift(shiftId, btn) {
-    currentShift = shiftId;
-    document.querySelectorAll('#rapportShiftSelector .shift-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    renderRapport();
-}
-
-function filterRapportFloor(floor, btn) {
-    rapportFloor = floor;
-    if (btn) {
-        btn.closest('.floor-filter').querySelectorAll('.shift-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    function showRapportPage() {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('rapportPage').classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.nav-item')[0].classList.add('active');
+        renderRapport();
     }
-    renderRapport();
-}
 
-function renderShiftSelector() {
-    document.getElementById('shiftSelector').innerHTML = database.shifts.map(s => `
-        <button class="shift-btn ${s.id === currentShift ? 'active' : ''}" onclick="switchShift('${s.id}', this)">${s.name}</button>
-    `).join('');
-    updateUserShift();
-}
-
-function switchShift(shiftId, btn) {
-    currentShift = shiftId;
-    document.querySelectorAll('#shiftSelector .shift-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    updateUserShift();
-    renderBeneficiaries();
-}
-
-function updateUserShift() {
-    const s = database.shifts.find(s => s.id === currentShift);
-    document.getElementById('userShift').textContent = s ? s.name : '';
-}
-
-function filterFloor(floor, btn) {
-    currentFloor = floor;
-    if (btn) {
-        btn.closest('.floor-filter').querySelectorAll('.shift-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    function showPreposeePage() {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('preposeShiftPage').classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.nav-item')[1].classList.add('active');
     }
-    renderBeneficiaries();
-}
 
-function renderBeneficiaries() {
-    const list = currentFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === currentFloor);
-    document.getElementById('beneficiariesGrid').innerHTML = list.map(b => `
-        <div class="beneficiary-card" onclick="openProfileModal('${b.id}')">
-            <div class="beneficiary-header">
-                <div>
-                    <div class="beneficiary-name">${b.name}</div>
-                    <div class="beneficiary-id">ID: ${b.id}</div>
-                </div>
-                <div class="bed-info">
-                    <div class="bed-number">🛏️ ${b.bed}</div>
-                    <div class="floor-badge">🏢 Étage ${b.floor}</div>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
+    function renderRapport() {
+        const prevShift = currentShift === 'matin' ? 'soir' : currentShift === 'midi' ? 'matin' : 'midi';
+        const shiftNames = { matin: 'Matin (06h-14h)', midi: 'Midi (14h-22h)', soir: 'Soir (22h-06h)' };
+        const today = new Date().toLocaleDateString('fr-CA');
 
-async function openProfileModal(benefId) {
-    currentModalPatientId = benefId;
-    const benef = database.beneficiaries.find(b => b.id === benefId);
-    const adminReqs = await fbGet(`admin_reqs/${benefId}`) || {};
-    const preposeData = await fbGet(`soins/${benefId}/${currentShift}`) || {};
-    const notes = await fbGet(`notes/${benefId}/${currentShift}`) || '';
+        document.getElementById('rapportInfo').textContent = `Rapport du shift ${shiftNames[prevShift]} - ${today}`;
 
-    document.getElementById('modalPatientName').textContent = benef.name;
-    document.getElementById('modalPatientInfo').textContent = `Lit: ${benef.bed} | Étage ${benef.floor}`;
-    document.getElementById('patientNotes').value = notes;
+        let html = `<h3>À vérifier</h3><p>Ce qui n'a pas été complété lors du dernier shift:</p>`;
 
-    let tableHTML = `<table class="care-table"><thead><tr><th>ADMIN</th><th>SOINS & ÉQUIPEMENTS</th><th>PRÉPOSÉ</th></tr></thead><tbody>`;
-    database.careRequirements.forEach((care, idx) => {
-        tableHTML += `<tr>
-            <td><input type="checkbox" ${adminReqs[idx] ? 'checked' : ''} disabled></td>
-            <td>${care}</td>
-            <td><input type="checkbox" id="pc_${benefId}_${idx}" ${preposeData[idx] ? 'checked' : ''} onchange="updateSoin('${benefId}', ${idx})"></td>
-        </tr>`;
-    });
-    tableHTML += `</tbody></table>`;
-    document.getElementById('modalCareItems').innerHTML = tableHTML;
-    document.getElementById('notesSection').style.display = 'block';
-    document.getElementById('profileModal').classList.add('active');
-}
+        const beneficiariesToDisplay = rapportFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === rapportFloor);
 
-async function updateSoin(benefId, idx) {
-    const checked = document.getElementById(`pc_${benefId}_${idx}`).checked;
-    await fbSet(`soins/${benefId}/${currentShift}/${idx}`, checked);
-}
+        beneficiariesToDisplay.forEach(benef => {
+            const adminReqs = getFromStorage(`patient_admin_${benef.id}`) || {};
+            const prevShiftData = getFromStorage(`patient_prepose_${benef.id}_${prevShift}`) || {};
 
-async function saveNotes() {
-    if (!currentModalPatientId) return;
-    const notes = document.getElementById('patientNotes').value;
-    await fbSet(`notes/${currentModalPatientId}/${currentShift}`, notes);
-    alert('✅ Notes sauvegardées !');
-}
-
-function closeProfileModal() {
-    document.getElementById('profileModal').classList.remove('active');
-    currentModalPatientId = null;
-}
-
-// =============================================
-// VUE INFIRMIÈRE
-// =============================================
-function initInfirmiereView() {
-    document.getElementById('navMenu').innerHTML = `<div class="nav-item active" onclick="showInfirmierePage()">📝 Rapports</div>`;
-    document.getElementById('infirmiereName').textContent = currentUser.name;
-    showInfirmierePage();
-    listenToAllReports();
-}
-
-function showInfirmierePage() {
-    showPage('infirmiereReportsPage', 0);
-}
-
-async function addReport() {
-    const input = document.getElementById('reportInput');
-    const text = input.value.trim();
-    if (!text) { alert('Veuillez entrer un rapport'); return; }
-    const now = new Date();
-    const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} - ${now.toLocaleDateString('fr-CA')}`;
-    const key = db.ref('reports').push().key;
-    await fbSet(`reports/${key}`, { text, time, auteur: currentUser.name });
-    input.value = '';
-}
-
-function listenToAllReports() {
-    fbListen('reports', data => {
-        const container = document.getElementById('allReports');
-        if (!data) { container.innerHTML = '<p style="color:#666;">Aucun rapport</p>'; return; }
-        const reports = Object.values(data).reverse();
-        container.innerHTML = reports.map(r => `
-            <div class="report-item">
-                <div class="report-time">${r.time} — ${r.auteur || ''}</div>
-                <div class="report-text">${r.text}</div>
-            </div>
-        `).join('');
-    });
-}
-
-function listenToReports() {
-    fbListen('reports', data => {
-        const div = document.getElementById('reportsDisplay');
-        if (!data) { div.innerHTML = '<p style="color:#666;font-size:14px;">Aucun rapport</p>'; return; }
-        const reports = Object.values(data).reverse().slice(0, 5);
-        div.innerHTML = '<h3 style="margin-bottom:15px;">📢 Rapports Infirmière</h3>' + reports.map(r => `
-            <div class="report-item">
-                <div class="report-time">${r.time}</div>
-                <div class="report-text">${r.text}</div>
-            </div>
-        `).join('');
-    });
-}
-
-function speakInfirmiereReports() {
-    if (isSpeaking) return;
-    isSpeaking = true;
-    const text = document.getElementById('allReports').innerText;
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'fr-CA';
-    u.onend = () => { isSpeaking = false; };
-    window.speechSynthesis.speak(u);
-}
-
-// =============================================
-// VUE ADMIN
-// =============================================
-function initAdminView() {
-    document.getElementById('navMenu').innerHTML = `<div class="nav-item active" onclick="showAdminPage()">📊 Tableau Bord</div>`;
-    document.getElementById('adminName').textContent = currentUser.name;
-    showAdminPage();
-    renderAdminDashboard();
-}
-
-function showAdminPage() {
-    showPage('adminPage', 0);
-}
-
-async function renderAdminDashboard() {
-    const today = new Date().toLocaleDateString('fr-CA');
-    let html = `<h3 style="margin-bottom:20px;">Récapitulatif du ${today}</h3>`;
-
-    for (const shift of database.shifts) {
-        html += `<div class="tableau-bord"><h3>${shift.name}</h3>`;
-        for (const benef of database.beneficiaries) {
-            const adminReqs = await fbGet(`admin_reqs/${benef.id}`) || {};
-            const shiftData = await fbGet(`soins/${benef.id}/${shift.id}`) || {};
-            const notes = await fbGet(`notes/${benef.id}/${shift.id}`) || '';
-            let completed = 0, total = 0, items = '';
+            let incomplete = false;
+            let items = '';
             database.careRequirements.forEach((care, idx) => {
-                if (adminReqs[idx]) {
-                    total++;
-                    if (shiftData[idx]) { completed++; items += `<div>✅ ${care}</div>`; }
-                    else { items += `<div>❌ ${care}</div>`; }
+                if (adminReqs[idx] && !prevShiftData[idx]) {
+                    incomplete = true;
+                    items += `<div>• ${care}</div>`;
                 }
             });
-            if (total > 0) {
-                const pct = Math.round((completed / total) * 100);
-                const cls = completed === total ? 'completed' : 'incomplete';
-                html += `<div class="tableau-row ${cls}">
-                    <div><strong>${benef.name}</strong><br>Lit ${benef.bed}</div>
-                    <div>${completed}/${total} (${pct}%)</div>
-                    <div>${items}</div>
-                    <div>${notes ? `<strong>Notes:</strong> ${notes}` : ''}</div>
-                </div>`;
+
+            if (incomplete) {
+                html += `<div style="margin: 15px 0; padding: 15px; background: #fff3cd; border-radius: 6px;"><strong>${benef.name} (Lit ${benef.bed}):</strong>${items}</div>`;
             }
-        }
-        html += `</div>`;
+        });
+
+        document.getElementById('rapportContent').innerHTML = html;
+
+        const shiftSelector = document.getElementById('rapportShiftSelector');
+        shiftSelector.innerHTML = database.shifts.map(shift => `
+            <button class="shift-btn ${shift.id === currentShift ? 'active' : ''}" onclick="switchRapportShift('${shift.id}')">
+                ${shift.name}
+            </button>
+        `).join('');
     }
-    document.getElementById('adminDashboard').innerHTML = html;
-}
 
-// =============================================
-// AUDIO
-// =============================================
-function speakRapport() {
-    if (isSpeaking) return;
-    isSpeaking = true;
-    const text = document.getElementById('rapportContent').innerText;
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'fr-CA';
-    u.onend = () => { isSpeaking = false; };
-    window.speechSynthesis.speak(u);
-}
+    function switchRapportShift(shiftId) {
+        currentShift = shiftId;
+        renderRapport();
+    }
 
-function stopSpeaking() {
-    window.speechSynthesis.cancel();
-    isSpeaking = false;
-}
+    function filterRapportFloor(floor) {
+        rapportFloor = floor;
+        document.querySelectorAll('.floor-filter .shift-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        renderRapport();
+    }
 
-// =============================================
-// UTILITAIRES
-// =============================================
-function showPage(pageId, navIndex) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(n => n.classList.remove('active'));
-    if (navItems[navIndex]) navItems[navIndex].classList.add('active');
-}
+    function speakRapport() {
+        if (isSpeaking) return;
+        isSpeaking = true;
+        const text = document.getElementById('rapportContent').innerText;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-CA';
+        utterance.rate = 1;
+        utterance.onend = () => { isSpeaking = false; };
+        window.speechSynthesis.speak(utterance);
+    }
 
-window.addEventListener('load', () => {
-    document.getElementById('userId').focus();
-});
+    function stopSpeaking() {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+    }
 
-window.onclick = function(e) {
-    if (e.target == document.getElementById('profileModal')) closeProfileModal();
-function showAdminConfigPage() {
-    showPage('adminConfigPage', 1);
-    renderConfigGrid();
-}
-let configFloor='all';
-let currentConfigPatientId=null;
-function filterConfigFloor(floor,btn){
-    configFloor=floor;
-    if(btn){btn.closest('.floor-filter').querySelectorAll('.shift-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
-    renderConfigGrid();
-}
-function renderConfigGrid(){
-    const list=configFloor==='all'?database.beneficiaries:database.beneficiaries.filter(b=>b.floor===configFloor);
-    document.getElementById('configGrid').innerHTML=list.map(b=>`<div class="beneficiary-card" onclick="openConfigModal('${b.id}')"><div class="beneficiary-header"><div><div class="beneficiary-name">${b.name}</div></div><div class="bed-info"><div class="bed-number">🛏️ ${b.bed}</div><div class="floor-badge">🏢 Étage ${b.floor}</div></div></div></div>`).join('');
-}
-async function openConfigModal(benefId){
-    currentConfigPatientId=benefId;
-    const benef=database.beneficiaries.find(b=>b.id===benefId);
-    const adminReqs=await fbGet(`admin_reqs/${benefId}`)||{};
-    document.getElementById('configModalPatientName').textContent=benef.name;
-    document.getElementById('configModalPatientInfo').textContent=`Lit: ${benef.bed} | Étage ${benef.floor}`;
-    let html='<table class="care-table"><thead><tr><th style="color:#dc2626;">REQUIS</th><th>SOINS</th></tr></thead><tbody>';
-    database.careRequirements.forEach((care,idx)=>{html+=`<tr><td><input type="checkbox" id="cfg_${benefId}_${idx}" ${adminReqs[idx]?'checked':''}></td><td>${care}</td></tr>`;});
-    html+='</tbody></table>';
-    document.getElementById('configCareItems').innerHTML=html;
-    document.getElementById('adminConfigModal').classList.add('active');
-}
-async function saveAdminConfig(){
-    if(!currentConfigPatientId)return;
-    const reqs={};
-    database.careRequirements.forEach((care,idx)=>{const cb=document.getElementById(`cfg_${currentConfigPatientId}_${idx}`);if(cb&&cb.checked)reqs[idx]=true;});
-    await fbSet(`admin_reqs/${currentConfigPatientId}`,reqs);
-    alert('✅ Configuration sauvegardée !');
-    closeConfigModal();
-}
-function closeConfigModal(){
-    document.getElementById('adminConfigModal').classList.remove('active');
-    currentConfigPatientId=null;
-}}
+    function renderShiftSelector() {
+        const selector = document.getElementById('shiftSelector');
+        selector.innerHTML = database.shifts.map(shift => `<button class="shift-btn ${shift.id === currentShift ? 'active' : ''}" onclick="switchShift('${shift.id}')">${shift.name}</button>`).join('');
+        updateUserShift();
+    }
+
+    function switchShift(shiftId) {
+        currentShift = shiftId;
+        renderShiftSelector();
+        renderBeneficiaries();
+    }
+
+    function updateUserShift() {
+        const shiftName = database.shifts.find(s => s.id === currentShift)?.name || '';
+        document.getElementById('userShift').textContent = shiftName;
+    }
+
+    function filterFloor(floor) {
+        currentFloor = floor;
+        document.querySelectorAll('.floor-filter .shift-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        renderBeneficiaries();
+    }
+
+    function renderReports() {
+        const reportsDiv = document.getElementById('reportsDisplay');
+        const reports = getFromStorage('reports') || [];
+        if (reports.length === 0) {
+            reportsDiv.innerHTML = '<p style="color: #666; font-size: 14px;">Aucun rapport pour le moment</p>';
+            return;
+        }
+        reportsDiv.innerHTML = '<h3 style="margin-bottom: 15px;">📢 Rapports Importants</h3>' + reports.map(report => `<div class="report-item"><div class="report-time">${report.time}</div><div class="report-text">${report.text}</div></div>`).join('');
+    }
+
+    function renderBeneficiaries() {
+        const grid = document.getElementById('beneficiariesGrid');
+        const beneficiariesToDisplay = currentFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === currentFloor);
+        grid.innerHTML = beneficiariesToDisplay.map(benef => `<div class="beneficiary-card" onclick="openProfileModal('${benef.id}')"><div class="beneficiary-header"><div class="beneficiary-info"><div class="beneficiary-name">${benef.name}</div><div class="beneficiary-id">ID: ${benef.id}</div></div><div class="bed-info"><div class="bed-number">🛏️ ${benef.bed}</div><div class="floor-badge">🏢 Étage ${benef.floor}</div></div></div></div>`).join('');
+    }
+
+    function openProfileModal(benefId) {
+        currentModalPatientId = benefId;
+        const benef = database.beneficiaries.find(b => b.id === benefId);
+        const adminRequirements = getFromStorage(`patient_admin_${benefId}`) || {};
+        const preposeVerification = getFromStorage(`patient_prepose_${benefId}_${currentShift}`) || {};
+        const patientNotes = getFromStorage(`patient_notes_${benefId}_${currentShift}`) || '';
+
+        document.getElementById('modalPatientName').textContent = benef.name;
+        document.getElementById('modalPatientInfo').textContent = `Lit: ${benef.bed} | Étage ${benef.floor}`;
+        document.getElementById('patientNotes').value = patientNotes;
+
+        let tableHTML = '<table class="care-table"><thead><tr><th>ADMIN</th><th>SOINS & ÉQUIPEMENTS</th><th>PRÉPOSÉ</th></tr></thead><tbody>';
+        
+        database.careRequirements.forEach((care, idx) => {
+            tableHTML += '<tr>';
+            tableHTML += `<td><input type="checkbox" id="admin_${benefId}_${idx}" ${adminRequirements[idx] ? 'checked' : ''} disabled></td>`;
+            tableHTML += `<td>${care}</td>`;
+            tableHTML += `<td><input type="checkbox" id="prepose_${benefId}_${idx}" ${preposeVerification[idx] ? 'checked' : ''} onchange="updatePreposeVerification('${benefId}', ${idx})"></td>`;
+            tableHTML += '</tr>';
+        });
+
+        tableHTML += '</tbody></table>';
+        document.getElementById('modalCareItems').innerHTML = tableHTML;
+        document.getElementById('notesSection').style.display = 'block';
+        document.getElementById('profileModal').classList.add('active');
+    }
+
+    function updatePreposeVerification(benefId, idx) {
+        const checkbox = document.getElementById(`prepose_${benefId}_${idx}`);
+        const verification = getFromStorage(`patient_prepose_${benefId}_${currentShift}`) || {};
+        verification[idx] = checkbox.checked;
+        saveToStorage(`patient_prepose_${benefId}_${currentShift}`, verification);
+    }
+
+    function closeProfileModal() {
+        if (currentModalPatientId) {
+            const notes = document.getElementById('patientNotes').value;
+            saveToStorage(`patient_notes_${currentModalPatientId}_${currentShift}`, notes);
+        }
+        document.getElementById('profileModal').classList.remove('active');
+        currentModalPatientId = null;
+    }
+
+    function initInfirmiereView() {
+        document.getElementById('navMenu').innerHTML = '<div class="nav-item active" onclick="showInfirmierePage()">📝 Rapports</div>';
+        document.getElementById('infirmiereName').textContent = currentUser.name;
+        showInfirmierePage();
+        renderAllReports();
+    }
+
+    function showInfirmierePage() {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('infirmiereReportsPage').classList.add('active');
+    }
+
+    function addReport() {
+        const input = document.getElementById('reportInput');
+        const text = input.value.trim();
+        if (!text) { alert('Veuillez entrer un rapport'); return; }
+
+        const reports = getFromStorage('reports') || [];
+        const now = new Date();
+        const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        reports.unshift({ text, time });
+        saveToStorage('reports', reports);
+
+        input.value = '';
+        renderAllReports();
+        renderReports();
+    }
+
+    function renderAllReports() {
+        const container = document.getElementById('allReports');
+        const reports = getFromStorage('reports') || [];
+        if (reports.length === 0) {
+            container.innerHTML = '<p style="color: #666;">Aucun rapport</p>';
+            return;
+        }
+        container.innerHTML = reports.map(report => `<div class="report-item"><div class="report-time">${report.time}</div><div class="report-text">${report.text}</div></div>`).join('');
+    }
+
+    function speakInfirmiereReports() {
+        if (isSpeaking) return;
+        isSpeaking = true;
+        const text = document.getElementById('allReports').innerText;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-CA';
+        utterance.onend = () => { isSpeaking = false; };
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function initAdminView() {
+        document.getElementById('navMenu').innerHTML = '<div class="nav-item active" onclick="showAdminPage()">📊 Tableau Bord</div>';
+        document.getElementById('adminName').textContent = currentUser.name;
+        showAdminPage();
+        renderAdminDashboard();
+    }
+
+    function showAdminPage() {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById('adminPage').classList.add('active');
+    }
+
+    function renderAdminDashboard() {
+        const today = new Date().toLocaleDateString('fr-CA');
+        let html = `<h3>Récapitulatif du ${today}</h3>`;
+
+        database.shifts.forEach(shift => {
+            html += `<div class="tableau-bord"><h3>${shift.name}</h3>`;
+
+            database.beneficiaries.forEach(benef => {
+                const adminReqs = getFromStorage(`patient_admin_${benef.id}`) || {};
+                const shiftData = getFromStorage(`patient_prepose_${benef.id}_${shift.id}`) || {};
+                const notes = getFromStorage(`patient_notes_${benef.id}_${shift.id}`) || '';
+
+                let completed = 0;
+                let total = 0;
+                let items = '';
+
+                database.careRequirements.forEach((care, idx) => {
+                    if (adminReqs[idx]) {
+                        total++;
+                        if (shiftData[idx]) {
+                            completed++;
+                            items += `<div>✅ ${care}</div>`;
+                        } else {
+                            items += `<div>❌ ${care}</div>`;
+                        }
+                    }
+                });
+
+                if (total > 0) {
+                    const percent = Math.round((completed / total) * 100);
+                    const rowClass = completed === total ? 'completed' : 'incomplete';
+                    html += `<div class="tableau-row ${rowClass}">
+                        <div><strong>${benef.name}</strong><br>Lit ${benef.bed}</div>
+                        <div>${completed}/${total} (${percent}%)</div>
+                        <div>${items}</div>
+                        <div>${notes ? `<strong>Notes:</strong> ${notes}` : ''}</div>
+                    </div>`;
+                }
+            });
+
+            html += `</div>`;
+        });
+
+        document.getElementById('adminDashboard').innerHTML = html;
+    }
+
+    window.addEventListener('load', () => {
+        document.getElementById('userId').focus();
+    });
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('profileModal');
+        if (event.target == modal) {
+            closeProfileModal();
+        }
+    }
 </script>
+
 </body>
 </html>
