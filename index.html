@@ -8,17 +8,16 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
         
-        .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
         .login-box { background: white; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
         .login-box h1 { font-size: 28px; margin-bottom: 10px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
         .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
         .btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-        
-        .role-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .role-btn { padding: 12px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; }
-        .role-btn.active { border-color: #2563eb; background: rgba(37, 99, 235, 0.05); color: #2563eb; }
+        .btn-fingerprint { width: 100%; padding: 15px; background: #059669; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px; margin-bottom: 15px; }
+        .btn-fingerprint:hover { background: #047857; }
+        .divider { text-align: center; margin: 20px 0; color: #666; }
         
         .hidden { display: none; }
         .app-container { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
@@ -40,67 +39,51 @@
         
         .floor-filter { margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .beneficiaries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-        .beneficiary-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #2563eb; cursor: pointer; transition: all 0.3s; }
-        .beneficiary-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); transform: translateY(-2px); }
-        .beneficiary-header { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: flex-start; }
+        .beneficiary-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #2563eb; cursor: pointer; }
         .beneficiary-name { font-size: 18px; font-weight: 700; }
         .beneficiary-id { font-size: 12px; color: #666; margin-top: 4px; }
-        .bed-info { display: flex; gap: 8px; flex-direction: column; align-items: flex-end; }
-        .bed-number { background: #2563eb; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-        .floor-badge { background: #667eea; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        .bed-number { background: #2563eb; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block; margin-top: 10px; }
         
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); overflow-y: auto; }
         .modal.active { display: block; }
         .modal-content { background: white; margin: 5% auto; padding: 30px; border-radius: 12px; width: 90%; max-width: 900px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #ddd; }
-        .modal-header h2 { font-size: 22px; }
         .close-btn { font-size: 28px; font-weight: bold; cursor: pointer; color: #666; }
         
         .care-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .care-table th { background: #f3f4f6; padding: 15px; text-align: center; font-weight: 700; border: 1px solid #ddd; font-size: 16px; }
+        .care-table th { background: #f3f4f6; padding: 15px; text-align: center; font-weight: 700; border: 1px solid #ddd; }
         .care-table th:first-child { color: #dc2626; }
         .care-table th:nth-child(2) { text-align: left; }
         .care-table th:last-child { color: #059669; }
         .care-table td { padding: 15px; border: 1px solid #ddd; text-align: center; }
-        .care-table td:nth-child(2) { text-align: left; font-weight: 500; }
-        .care-table input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; accent-color: #059669; }
+        .care-table td:nth-child(2) { text-align: left; }
+        .care-table input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; }
         
         .notes-section { margin-top: 25px; padding: 20px; background: #f9f9f9; border-radius: 8px; border-left: 4px solid #f59e0b; }
-        .notes-section label { display: block; font-weight: 600; margin-bottom: 10px; font-size: 14px; }
-        .notes-section textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: Arial; min-height: 80px; resize: vertical; }
-        
-        .rapport-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .rapport-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #2563eb; }
-        .rapport-header h3 { color: #2563eb; margin-bottom: 10px; }
-        .audio-controls { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
-        .audio-btn { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; }
-        .audio-btn:hover { background: #1e40af; }
-        .audio-btn.stop { background: #dc2626; }
-        .print-btn { padding: 12px 20px; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        
-        .reports-section { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .report-item { padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; margin-bottom: 10px; }
-        .report-time { font-size: 12px; color: #666; margin-bottom: 5px; }
-        .report-text { font-size: 14px; color: #333; }
-        .add-report-form { display: flex; gap: 10px; margin-top: 15px; }
-        .add-report-form input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-        .add-report-form button { padding: 10px 20px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .notes-section label { display: block; font-weight: 600; margin-bottom: 10px; }
+        .notes-section textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 80px; }
         
         .tableau-bord { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .tableau-bord h3 { margin-bottom: 15px; color: #2563eb; }
-        .tableau-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 12px; background: #f9f9f9; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid #2563eb; }
+        .tableau-row { padding: 12px; background: #f9f9f9; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid #2563eb; }
         .tableau-row.completed { border-left-color: #059669; }
-        .tableau-row.incomplete { border-left-color: #dc2626; }
+        
+        .reports-section { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .report-item { padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; margin-bottom: 10px; }
+        .report-time { font-size: 12px; color: #666; margin-bottom: 5px; }
+        
+        .add-report-form { display: flex; gap: 10px; margin-top: 15px; }
+        .add-report-form input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .add-report-form button { padding: 10px 20px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        
+        .print-btn { padding: 12px 20px; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 20px; }
         
         @media (max-width: 768px) {
             .app-container { grid-template-columns: 1fr; }
             .beneficiaries-grid { grid-template-columns: 1fr; }
-            .modal-content { width: 95%; margin: 20% auto; }
-            .tableau-row { grid-template-columns: 1fr; }
         }
         
         @media print {
-            .audio-controls, .logout-btn, .sidebar, .nav-item { display: none; }
+            .logout-btn, .sidebar, .nav-item, .add-report-form { display: none; }
         }
     </style>
 </head>
@@ -111,30 +94,23 @@
         <h1>🏥 ASSOMP</h1>
         <p style="color: #666; margin-bottom: 30px; font-size: 14px;">Système de Suivi des Soins</p>
 
-        <label style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px;">Rôle:</label>
-        <div class="role-selector">
-            <div class="role-btn active" onclick="selectRole('prepose')">👤 Préposé</div>
-            <div class="role-btn" onclick="selectRole('infirmiere')">👩‍⚕️ Infirmière</div>
-            <div class="role-btn" onclick="selectRole('admin')">👨‍💼 Admin</div>
-        </div>
+        <button class="btn-fingerprint" onclick="authenticateFingerprint()">👆 Authentification Empreinte Digitale</button>
+
+        <div class="divider">OU</div>
 
         <div class="form-group">
-            <label>ID Utilisateur</label>
-            <input type="text" id="userId" placeholder="PREP001">
-        </div>
-
-        <div class="form-group">
-            <label>Mot de passe</label>
-            <input type="password" id="password" placeholder="1234">
+            <label>Numéro de Matricule</label>
+            <input type="text" id="userId" placeholder="29246">
         </div>
 
         <button class="btn" onclick="login()">Connexion</button>
 
         <p style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">
-            <strong>Identifiants:</strong><br>
-            Préposé: PREP001 / 1234<br>
-            Infirmière: INF001 / 1234<br>
-            Admin: ADMIN001 / 1234
+            <strong>Matricules Test:</strong><br>
+            29246 - Joule Musuwa<br>
+            10001 - Marie Dupont<br>
+            10002 - Jean Martin<br>
+            10003 - Sophie Bernard
         </p>
     </div>
 </div>
@@ -147,7 +123,7 @@
     </div>
 
     <div class="main-content">
-        <!-- PAGE RAPPORT TRANSITION PREPOSE -->
+        <!-- PAGE RAPPORT -->
         <div id="rapportPage" class="page">
             <div class="page-header">
                 <h2>📋 Rapport de Transition</h2>
@@ -157,28 +133,20 @@
                 </div>
             </div>
 
-            <div class="rapport-container">
-                <div class="audio-controls">
-                    <button class="audio-btn" onclick="speakRapport()">🔊 Écouter le rapport</button>
-                    <button class="audio-btn stop" onclick="stopSpeaking()">⏹️ Arrêter</button>
-                </div>
-
-                <div id="rapportContent" class="rapport-header"></div>
-            </div>
+            <div id="rapportContent" style="background: white; padding: 20px; border-radius: 12px;"></div>
 
             <div class="shift-selector" id="rapportShiftSelector"></div>
-
             <div class="floor-filter">
                 <label>🏢 Filtrer par Étage:</label>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-                    <button class="shift-btn active" onclick="filterRapportFloor('all')">📋 Tous</button>
-                    <button class="shift-btn" onclick="filterRapportFloor(2)">🏢 Étage 2</button>
-                    <button class="shift-btn" onclick="filterRapportFloor(3)">🏢 Étage 3</button>
+                    <button class="shift-btn active" onclick="filterRapportFloor('all')">Tous</button>
+                    <button class="shift-btn" onclick="filterRapportFloor(2)">Étage 2</button>
+                    <button class="shift-btn" onclick="filterRapportFloor(3)">Étage 3</button>
                 </div>
             </div>
         </div>
 
-        <!-- PAGE SOINS PREPOSE -->
+        <!-- PAGE SOINS -->
         <div id="preposeShiftPage" class="page">
             <div class="page-header">
                 <h2>📝 Enregistrement des Soins</h2>
@@ -191,16 +159,14 @@
             <div id="reportsDisplay" class="reports-section"></div>
 
             <div class="shift-selector" id="shiftSelector"></div>
-
             <div class="floor-filter">
                 <label>🏢 Filtrer par Étage:</label>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-                    <button class="shift-btn active" onclick="filterFloor('all')">📋 Tous</button>
-                    <button class="shift-btn" onclick="filterFloor(2)">🏢 Étage 2</button>
-                    <button class="shift-btn" onclick="filterFloor(3)">🏢 Étage 3</button>
+                    <button class="shift-btn active" onclick="filterFloor('all')">Tous</button>
+                    <button class="shift-btn" onclick="filterFloor(2)">Étage 2</button>
+                    <button class="shift-btn" onclick="filterFloor(3)">Étage 3</button>
                 </div>
             </div>
-
             <div class="beneficiaries-grid" id="beneficiariesGrid"></div>
         </div>
 
@@ -216,18 +182,14 @@
             <div class="reports-section">
                 <h3 style="margin-bottom: 15px;">➕ Ajouter un Rapport</h3>
                 <div class="add-report-form">
-                    <input type="text" id="reportInput" placeholder="Rapport important du shift...">
+                    <input type="text" id="reportInput" placeholder="Rapport du shift...">
                     <button onclick="addReport()">Envoyer</button>
-                </div>
-                <div class="audio-controls" style="margin-top: 20px;">
-                    <button class="audio-btn" onclick="speakInfirmiereReports()">🔊 Écouter les rapports</button>
-                    <button class="audio-btn stop" onclick="stopSpeaking()">⏹️ Arrêter</button>
                 </div>
                 <div id="allReports" style="margin-top: 20px;"></div>
             </div>
         </div>
 
-        <!-- PAGE TABLEAU DE BORD ADMIN -->
+        <!-- PAGE TABLEAU BORD ADMIN -->
         <div id="adminPage" class="page">
             <div class="page-header">
                 <h2>📊 Tableau de Bord</h2>
@@ -236,10 +198,7 @@
                 </div>
             </div>
 
-            <div class="audio-controls">
-                <button class="print-btn" onclick="window.print()">🖨️ Imprimer / PDF</button>
-            </div>
-
+            <button class="print-btn" onclick="window.print()">🖨️ Imprimer / PDF</button>
             <div id="adminDashboard"></div>
         </div>
     </div>
@@ -258,7 +217,7 @@
         <div id="modalCareItems"></div>
         <div id="notesSection" class="notes-section" style="display:none;">
             <label>📝 Notes Observations:</label>
-            <textarea id="patientNotes" placeholder="Ex: Patient a des rougeurs à la jambe gauche..."></textarea>
+            <textarea id="patientNotes" placeholder="Observations..."></textarea>
         </div>
     </div>
 </div>
@@ -268,118 +227,49 @@
     let currentShift = 'matin';
     let currentFloor = 'all';
     let rapportFloor = 'all';
-    let selectedRole = 'prepose';
-    let isSpeaking = false;
     let currentModalPatientId = null;
 
-    const database = {
-        users: {
-            'PREP001': { password: '1234', name: 'Marie Dupont', role: 'prepose' },
-            'PREP002': { password: '1234', name: 'Jean Martin', role: 'prepose' },
-            'INF001': { password: '1234', name: 'Sophie Bernard', role: 'infirmiere' },
-            'ADMIN001': { password: '1234', name: 'Pierre Rousseau', role: 'admin' }
-        },
-        careRequirements: [
-            'Porte dentier 🦷', 'Porte appareils auditifs 👂', 'Porte lunettes 👓',
-            'Utilise marchette 🚶', 'Utilise chaise roulante ♿', 'Se déplace en pivot 🔄',
-            'Se déplace avec lève-personnes 🏋️', 'Se déplace avec Sara 🪑', 'Marche 🚶',
-            'Mange seul 🍴', 'Aide à manger 🥄', 'Bain partiel 🚿', 'Bain complet 🛁',
-            'Liquide miel 🍯', 'Liquide nectar 🧃', 'Liquide clair 💧', 'Diète purée 🥣',
-            'Diète normale 🍽️', 'Ceinture de marche 🎽', 'Tags sur fauteuil 🏷️', 'Tags au lit 🏷️',
-            'Tapis de chute 🛏️', 'Chaise d\'aisance 🪑', 'Selle 🚽'
-        ],
-        beneficiaries: [
-            { id: 'B001', name: 'Patient 201', bed: '201', floor: 2 },
-            { id: 'B002', name: 'Patient 202', bed: '202', floor: 2 },
-            { id: 'B003', name: 'Patient 203', bed: '203', floor: 2 },
-            { id: 'B004', name: 'Patient 204', bed: '204', floor: 2 },
-            { id: 'B005', name: 'Patient 205', bed: '205', floor: 2 },
-            { id: 'B006', name: 'Patient 206A', bed: '206A', floor: 2 },
-            { id: 'B007', name: 'Patient 206B', bed: '206B', floor: 2 },
-            { id: 'B008', name: 'Patient 207A', bed: '207A', floor: 2 },
-            { id: 'B009', name: 'Patient 207B', bed: '207B', floor: 2 },
-            { id: 'B010', name: 'Patient 208A', bed: '208A', floor: 2 },
-            { id: 'B011', name: 'Patient 208B', bed: '208B', floor: 2 },
-            { id: 'B012', name: 'Patient 209A', bed: '209A', floor: 2 },
-            { id: 'B013', name: 'Patient 209B', bed: '209B', floor: 2 },
-            { id: 'B014', name: 'Patient 210A', bed: '210A', floor: 2 },
-            { id: 'B015', name: 'Patient 210B', bed: '210B', floor: 2 },
-            { id: 'B016', name: 'Patient 211A', bed: '211A', floor: 2 },
-            { id: 'B017', name: 'Patient 211B', bed: '211B', floor: 2 },
-            { id: 'B018', name: 'Patient 2014A', bed: '2014A', floor: 2 },
-            { id: 'B019', name: 'Patient 2014B', bed: '2014B', floor: 2 },
-            { id: 'B020', name: 'Patient 2015A', bed: '2015A', floor: 2 },
-            { id: 'B021', name: 'Patient 2015B', bed: '2015B', floor: 2 },
-            { id: 'B022', name: 'Patient 2016A', bed: '2016A', floor: 2 },
-            { id: 'B023', name: 'Patient 2016B', bed: '2016B', floor: 2 },
-            { id: 'B024', name: 'Patient 2017A', bed: '2017A', floor: 2 },
-            { id: 'B025', name: 'Patient 2017B', bed: '2017B', floor: 2 },
-            { id: 'B026', name: 'Patient 2018A', bed: '2018A', floor: 2 },
-            { id: 'B027', name: 'Patient 2018B', bed: '2018B', floor: 2 },
-            { id: 'B028', name: 'Patient 2019A', bed: '2019A', floor: 2 },
-            { id: 'B029', name: 'Patient 2019B', bed: '2019B', floor: 2 },
-            { id: 'B030', name: 'Patient 2020A', bed: '2020A', floor: 2 },
-            { id: 'B031', name: 'Patient 2020B', bed: '2020B', floor: 2 },
-            { id: 'B032', name: 'Patient 2021A', bed: '2021A', floor: 2 },
-            { id: 'B033', name: 'Patient 2021B', bed: '2021B', floor: 2 },
-            { id: 'B034', name: 'Patient 2022A', bed: '2022A', floor: 2 },
-            { id: 'B035', name: 'Patient 2022B', bed: '2022B', floor: 2 },
-            { id: 'B036', name: 'Patient 2023A', bed: '2023A', floor: 2 },
-            { id: 'B037', name: 'Patient 2023B', bed: '2023B', floor: 2 },
-            { id: 'B038', name: 'Patient 301', bed: '301', floor: 3 },
-            { id: 'B039', name: 'Patient 302', bed: '302', floor: 3 },
-            { id: 'B040', name: 'Patient 303', bed: '303', floor: 3 },
-            { id: 'B041', name: 'Patient 304', bed: '304', floor: 3 },
-            { id: 'B042', name: 'Patient 305', bed: '305', floor: 3 },
-            { id: 'B043', name: 'Patient 306A', bed: '306A', floor: 3 },
-            { id: 'B044', name: 'Patient 306B', bed: '306B', floor: 3 },
-            { id: 'B045', name: 'Patient 307A', bed: '307A', floor: 3 },
-            { id: 'B046', name: 'Patient 307B', bed: '307B', floor: 3 },
-            { id: 'B047', name: 'Patient 308A', bed: '308A', floor: 3 },
-            { id: 'B048', name: 'Patient 308B', bed: '308B', floor: 3 },
-            { id: 'B049', name: 'Patient 309A', bed: '309A', floor: 3 },
-            { id: 'B050', name: 'Patient 309B', bed: '309B', floor: 3 },
-            { id: 'B051', name: 'Patient 310A', bed: '310A', floor: 3 },
-            { id: 'B052', name: 'Patient 310B', bed: '310B', floor: 3 },
-            { id: 'B053', name: 'Patient 311A', bed: '311A', floor: 3 },
-            { id: 'B054', name: 'Patient 311B', bed: '311B', floor: 3 },
-            { id: 'B055', name: 'Patient 312A', bed: '312A', floor: 3 },
-            { id: 'B056', name: 'Patient 312B', bed: '312B', floor: 3 },
-            { id: 'B057', name: 'Patient 313A', bed: '313A', floor: 3 },
-            { id: 'B058', name: 'Patient 313B', bed: '313B', floor: 3 },
-            { id: 'B059', name: 'Patient 314A', bed: '314A', floor: 3 },
-            { id: 'B060', name: 'Patient 314B', bed: '314B', floor: 3 },
-            { id: 'B061', name: 'Patient 315A', bed: '315A', floor: 3 },
-            { id: 'B062', name: 'Patient 315B', bed: '315B', floor: 3 },
-            { id: 'B063', name: 'Patient 316A', bed: '316A', floor: 3 },
-            { id: 'B064', name: 'Patient 316B', bed: '316B', floor: 3 },
-            { id: 'B065', name: 'Patient 317A', bed: '317A', floor: 3 },
-            { id: 'B066', name: 'Patient 317B', bed: '317B', floor: 3 },
-            { id: 'B067', name: 'Patient 318A', bed: '318A', floor: 3 },
-            { id: 'B068', name: 'Patient 318B', bed: '318B', floor: 3 },
-            { id: 'B069', name: 'Patient 319A', bed: '319A', floor: 3 },
-            { id: 'B070', name: 'Patient 319B', bed: '319B', floor: 3 },
-            { id: 'B071', name: 'Patient 320A', bed: '320A', floor: 3 },
-            { id: 'B072', name: 'Patient 320B', bed: '320B', floor: 3 },
-            { id: 'B073', name: 'Patient 321A', bed: '321A', floor: 3 },
-            { id: 'B074', name: 'Patient 321B', bed: '321B', floor: 3 },
-            { id: 'B075', name: 'Patient 322A', bed: '322A', floor: 3 },
-            { id: 'B076', name: 'Patient 322B', bed: '322B', floor: 3 },
-            { id: 'B077', name: 'Patient 323A', bed: '323A', floor: 3 },
-            { id: 'B078', name: 'Patient 323B', bed: '323B', floor: 3 },
-            { id: 'B079', name: 'Patient 324A', bed: '324A', floor: 3 },
-            { id: 'B080', name: 'Patient 324B', bed: '324B', floor: 3 },
-            { id: 'B081', name: 'Patient 325A', bed: '325A', floor: 3 },
-            { id: 'B082', name: 'Patient 325B', bed: '325B', floor: 3 },
-            { id: 'B083', name: 'Patient 3027A', bed: '3027A', floor: 3 },
-            { id: 'B084', name: 'Patient 3027B', bed: '3027B', floor: 3 }
-        ],
-        shifts: [
-            { id: 'matin', name: 'Matin (06h-14h)' },
-            { id: 'midi', name: 'Midi (14h-22h)' },
-            { id: 'soir', name: 'Soir (22h-06h)' }
-        ]
+    const users = {
+        '29246': { name: 'Joule Musuwa', role: 'prepose' },
+        '10001': { name: 'Marie Dupont', role: 'prepose' },
+        '10002': { name: 'Jean Martin', role: 'prepose' },
+        '10003': { name: 'Sophie Bernard', role: 'infirmiere' },
+        '10004': { name: 'Pierre Rousseau', role: 'admin' },
+        '10005': { name: 'Luc Bergeron', role: 'prepose' },
+        '10006': { name: 'Anne Mercier', role: 'prepose' },
+        '10007': { name: 'Michel Gauthier', role: 'prepose' },
+        '10008': { name: 'Julie Fontaine', role: 'prepose' },
+        '10009': { name: 'David Leclerc', role: 'prepose' }
     };
+
+    const careRequirements = [
+        'Porte dentier 🦷', 'Porte appareils auditifs 👂', 'Porte lunettes 👓',
+        'Utilise marchette 🚶', 'Utilise chaise roulante ♿', 'Se déplace en pivot 🔄',
+        'Se déplace avec lève-personnes 🏋️', 'Se déplace avec Sara 🪑', 'Marche 🚶',
+        'Mange seul 🍴', 'Aide à manger 🥄', 'Bain partiel 🚿', 'Bain complet 🛁',
+        'Liquide miel 🍯', 'Liquide nectar 🧃', 'Liquide clair 💧', 'Diète purée 🥣',
+        'Diète normale 🍽️', 'Ceinture de marche 🎽', 'Tags sur fauteuil 🏷️', 'Tags au lit 🏷️',
+        'Tapis de chute 🛏️', 'Chaise d\'aisance 🪑', 'Selle 🚽'
+    ];
+
+    const beneficiaries = [
+        { id: 'B001', name: 'Patient 201', bed: '201', floor: 2 },
+        { id: 'B002', name: 'Patient 202', bed: '202', floor: 2 },
+        { id: 'B003', name: 'Patient 203', bed: '203', floor: 2 },
+        { id: 'B004', name: 'Patient 204', bed: '204', floor: 2 },
+        { id: 'B005', name: 'Patient 205', bed: '205', floor: 2 },
+        { id: 'B038', name: 'Patient 301', bed: '301', floor: 3 },
+        { id: 'B039', name: 'Patient 302', bed: '302', floor: 3 },
+        { id: 'B040', name: 'Patient 303', bed: '303', floor: 3 },
+        { id: 'B041', name: 'Patient 304', bed: '304', floor: 3 },
+        { id: 'B042', name: 'Patient 305', bed: '305', floor: 3 }
+    ];
+
+    const shifts = [
+        { id: 'matin', name: 'Matin (06h-14h)' },
+        { id: 'midi', name: 'Midi (14h-22h)' },
+        { id: 'soir', name: 'Soir (22h-06h)' }
+    ];
 
     function saveToStorage(key, value) {
         try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { }
@@ -389,22 +279,23 @@
         try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : null; } catch (e) { return null; }
     }
 
-    function selectRole(role) {
-        selectedRole = role;
-        document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+    function authenticateFingerprint() {
+        if (window.PublicKeyCredential) {
+            alert('👆 Utilisez votre empreinte digitale sur votre appareil');
+            // Simulation - en production il faudrait WebAuthn complet
+            return;
+        }
+        alert('Empreinte digitale non supportée sur ce navigateur');
     }
 
     function login() {
         const userId = document.getElementById('userId').value.trim();
-        const password = document.getElementById('password').value;
+        if (!userId || !users[userId]) {
+            alert('❌ Matricule invalide');
+            return;
+        }
 
-        if (!userId || !password) { alert('❌ Veuillez entrer votre ID et mot de passe'); return; }
-
-        const user = database.users[userId];
-        if (!user || user.password !== password) { alert('❌ ID ou mot de passe incorrect'); return; }
-        if (user.role !== selectedRole) { alert('❌ Rôle sélectionné incorrect'); return; }
-
+        const user = users[userId];
         currentUser = { id: userId, ...user };
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('appContainer').classList.remove('hidden');
@@ -420,7 +311,6 @@
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('appContainer').classList.add('hidden');
             document.getElementById('userId').value = '';
-            document.getElementById('password').value = '';
         }
     }
 
@@ -444,7 +334,6 @@
         document.getElementById('rapportPage').classList.add('active');
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.querySelectorAll('.nav-item')[0].classList.add('active');
-        renderRapport();
     }
 
     function showPreposeePage() {
@@ -456,37 +345,23 @@
 
     function renderRapport() {
         const prevShift = currentShift === 'matin' ? 'soir' : currentShift === 'midi' ? 'matin' : 'midi';
-        const shiftNames = { matin: 'Matin (06h-14h)', midi: 'Midi (14h-22h)', soir: 'Soir (22h-06h)' };
-        const today = new Date().toLocaleDateString('fr-CA');
+        const shiftNames = { matin: 'Matin', midi: 'Midi', soir: 'Soir' };
+        document.getElementById('rapportInfo').textContent = `Rapport du ${shiftNames[prevShift]}`;
 
-        document.getElementById('rapportInfo').textContent = `Rapport du shift ${shiftNames[prevShift]} - ${today}`;
-
-        let html = `<h3>À vérifier</h3><p>Ce qui n'a pas été complété lors du dernier shift:</p>`;
-
-        const beneficiariesToDisplay = rapportFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === rapportFloor);
-
-        beneficiariesToDisplay.forEach(benef => {
-            const adminReqs = getFromStorage(`patient_admin_${benef.id}`) || {};
-            const prevShiftData = getFromStorage(`patient_prepose_${benef.id}_${prevShift}`) || {};
-
+        let html = '<h3>À vérifier</h3>';
+        beneficiaries.forEach(benef => {
+            const adminReqs = getFromStorage(`admin_${benef.id}`) || {};
+            const prevShiftData = getFromStorage(`prepose_${benef.id}_${prevShift}`) || {};
             let incomplete = false;
-            let items = '';
-            database.careRequirements.forEach((care, idx) => {
-                if (adminReqs[idx] && !prevShiftData[idx]) {
-                    incomplete = true;
-                    items += `<div>• ${care}</div>`;
-                }
+            beneficiaries.forEach((b, idx) => {
+                if (adminReqs[idx] && !prevShiftData[idx]) incomplete = true;
             });
-
-            if (incomplete) {
-                html += `<div style="margin: 15px 0; padding: 15px; background: #fff3cd; border-radius: 6px;"><strong>${benef.name} (Lit ${benef.bed}):</strong>${items}</div>`;
-            }
+            if (incomplete) html += `<div style="margin: 10px 0;">• ${benef.name} (Lit ${benef.bed})</div>`;
         });
-
         document.getElementById('rapportContent').innerHTML = html;
 
         const shiftSelector = document.getElementById('rapportShiftSelector');
-        shiftSelector.innerHTML = database.shifts.map(shift => `
+        shiftSelector.innerHTML = shifts.map(shift => `
             <button class="shift-btn ${shift.id === currentShift ? 'active' : ''}" onclick="switchRapportShift('${shift.id}')">
                 ${shift.name}
             </button>
@@ -502,40 +377,18 @@
         rapportFloor = floor;
         document.querySelectorAll('.floor-filter .shift-btn').forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
-        renderRapport();
-    }
-
-    function speakRapport() {
-        if (isSpeaking) return;
-        isSpeaking = true;
-        const text = document.getElementById('rapportContent').innerText;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'fr-CA';
-        utterance.rate = 1;
-        utterance.onend = () => { isSpeaking = false; };
-        window.speechSynthesis.speak(utterance);
-    }
-
-    function stopSpeaking() {
-        window.speechSynthesis.cancel();
-        isSpeaking = false;
     }
 
     function renderShiftSelector() {
         const selector = document.getElementById('shiftSelector');
-        selector.innerHTML = database.shifts.map(shift => `<button class="shift-btn ${shift.id === currentShift ? 'active' : ''}" onclick="switchShift('${shift.id}')">${shift.name}</button>`).join('');
-        updateUserShift();
+        selector.innerHTML = shifts.map(shift => `<button class="shift-btn ${shift.id === currentShift ? 'active' : ''}" onclick="switchShift('${shift.id}')">${shift.name}</button>`).join('');
+        document.getElementById('userShift').textContent = shifts.find(s => s.id === currentShift)?.name || '';
     }
 
     function switchShift(shiftId) {
         currentShift = shiftId;
         renderShiftSelector();
         renderBeneficiaries();
-    }
-
-    function updateUserShift() {
-        const shiftName = database.shifts.find(s => s.id === currentShift)?.name || '';
-        document.getElementById('userShift').textContent = shiftName;
     }
 
     function filterFloor(floor) {
@@ -549,59 +402,58 @@
         const reportsDiv = document.getElementById('reportsDisplay');
         const reports = getFromStorage('reports') || [];
         if (reports.length === 0) {
-            reportsDiv.innerHTML = '<p style="color: #666; font-size: 14px;">Aucun rapport pour le moment</p>';
+            reportsDiv.innerHTML = '<p>Aucun rapport</p>';
             return;
         }
-        reportsDiv.innerHTML = '<h3 style="margin-bottom: 15px;">📢 Rapports Importants</h3>' + reports.map(report => `<div class="report-item"><div class="report-time">${report.time}</div><div class="report-text">${report.text}</div></div>`).join('');
+        reportsDiv.innerHTML = '<h3>📢 Rapports Importants</h3>' + reports.map(r => `<div class="report-item"><div class="report-time">${r.time}</div><div>${r.text}</div></div>`).join('');
     }
 
     function renderBeneficiaries() {
         const grid = document.getElementById('beneficiariesGrid');
-        const beneficiariesToDisplay = currentFloor === 'all' ? database.beneficiaries : database.beneficiaries.filter(b => b.floor === currentFloor);
-        grid.innerHTML = beneficiariesToDisplay.map(benef => `<div class="beneficiary-card" onclick="openProfileModal('${benef.id}')"><div class="beneficiary-header"><div class="beneficiary-info"><div class="beneficiary-name">${benef.name}</div><div class="beneficiary-id">ID: ${benef.id}</div></div><div class="bed-info"><div class="bed-number">🛏️ ${benef.bed}</div><div class="floor-badge">🏢 Étage ${benef.floor}</div></div></div></div>`).join('');
+        const toDisplay = currentFloor === 'all' ? beneficiaries : beneficiaries.filter(b => b.floor === currentFloor);
+        grid.innerHTML = toDisplay.map(b => `<div class="beneficiary-card" onclick="openProfileModal('${b.id}')"><div class="beneficiary-name">${b.name}</div><div class="beneficiary-id">ID: ${b.id}</div><div class="bed-number">🛏️ Lit ${b.bed}</div></div>`).join('');
     }
 
     function openProfileModal(benefId) {
         currentModalPatientId = benefId;
-        const benef = database.beneficiaries.find(b => b.id === benefId);
-        const adminRequirements = getFromStorage(`patient_admin_${benefId}`) || {};
-        const preposeVerification = getFromStorage(`patient_prepose_${benefId}_${currentShift}`) || {};
-        const patientNotes = getFromStorage(`patient_notes_${benefId}_${currentShift}`) || '';
+        const benef = beneficiaries.find(b => b.id === benefId);
+        const adminReqs = getFromStorage(`admin_${benefId}`) || {};
+        const preposeData = getFromStorage(`prepose_${benefId}_${currentShift}`) || {};
+        const notes = getFromStorage(`notes_${benefId}_${currentShift}`) || '';
 
         document.getElementById('modalPatientName').textContent = benef.name;
-        document.getElementById('modalPatientInfo').textContent = `Lit: ${benef.bed} | Étage ${benef.floor}`;
-        document.getElementById('patientNotes').value = patientNotes;
+        document.getElementById('modalPatientInfo').textContent = `Lit ${benef.bed} | Étage ${benef.floor}`;
+        document.getElementById('patientNotes').value = notes;
 
-        let tableHTML = '<table class="care-table"><thead><tr><th>ADMIN</th><th>SOINS & ÉQUIPEMENTS</th><th>PRÉPOSÉ</th></tr></thead><tbody>';
-        
-        database.careRequirements.forEach((care, idx) => {
-            tableHTML += '<tr>';
-            tableHTML += `<td><input type="checkbox" id="admin_${benefId}_${idx}" ${adminRequirements[idx] ? 'checked' : ''} disabled></td>`;
-            tableHTML += `<td>${care}</td>`;
-            tableHTML += `<td><input type="checkbox" id="prepose_${benefId}_${idx}" ${preposeVerification[idx] ? 'checked' : ''} onchange="updatePreposeVerification('${benefId}', ${idx})"></td>`;
-            tableHTML += '</tr>';
+        let html = '<table class="care-table"><thead><tr><th>ADMIN</th><th>SOINS</th><th>PRÉPOSÉ</th></tr></thead><tbody>';
+        careRequirements.forEach((care, idx) => {
+            html += `<tr>
+                <td><input type="checkbox" ${adminReqs[idx] ? 'checked' : ''} disabled></td>
+                <td>${care}</td>
+                <td><input type="checkbox" ${preposeData[idx] ? 'checked' : ''} onchange="updatePrepose('${benefId}', ${idx})"></td>
+            </tr>`;
         });
-
-        tableHTML += '</tbody></table>';
-        document.getElementById('modalCareItems').innerHTML = tableHTML;
+        html += '</tbody></table>';
+        document.getElementById('modalCareItems').innerHTML = html;
         document.getElementById('notesSection').style.display = 'block';
         document.getElementById('profileModal').classList.add('active');
     }
 
-    function updatePreposeVerification(benefId, idx) {
-        const checkbox = document.getElementById(`prepose_${benefId}_${idx}`);
-        const verification = getFromStorage(`patient_prepose_${benefId}_${currentShift}`) || {};
-        verification[idx] = checkbox.checked;
-        saveToStorage(`patient_prepose_${benefId}_${currentShift}`, verification);
+    function updatePrepose(benefId, idx) {
+        const checkbox = document.querySelector(`[onchange*="${benefId}"][onchange*="${idx}"]`);
+        const data = getFromStorage(`prepose_${benefId}_${currentShift}`) || {};
+        data[idx] = checkbox.checked;
+        const now = new Date();
+        const timestamp = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} - ${currentUser.name}`;
+        data[`timestamp_${idx}`] = timestamp;
+        saveToStorage(`prepose_${benefId}_${currentShift}`, data);
     }
 
     function closeProfileModal() {
         if (currentModalPatientId) {
-            const notes = document.getElementById('patientNotes').value;
-            saveToStorage(`patient_notes_${currentModalPatientId}_${currentShift}`, notes);
+            saveToStorage(`notes_${currentModalPatientId}_${currentShift}`, document.getElementById('patientNotes').value);
         }
         document.getElementById('profileModal').classList.remove('active');
-        currentModalPatientId = null;
     }
 
     function initInfirmiereView() {
@@ -619,37 +471,22 @@
     function addReport() {
         const input = document.getElementById('reportInput');
         const text = input.value.trim();
-        if (!text) { alert('Veuillez entrer un rapport'); return; }
+        if (!text) return;
 
         const reports = getFromStorage('reports') || [];
         const now = new Date();
-        const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} - ${currentUser.name}`;
         reports.unshift({ text, time });
         saveToStorage('reports', reports);
-
         input.value = '';
         renderAllReports();
         renderReports();
     }
 
     function renderAllReports() {
-        const container = document.getElementById('allReports');
         const reports = getFromStorage('reports') || [];
-        if (reports.length === 0) {
-            container.innerHTML = '<p style="color: #666;">Aucun rapport</p>';
-            return;
-        }
-        container.innerHTML = reports.map(report => `<div class="report-item"><div class="report-time">${report.time}</div><div class="report-text">${report.text}</div></div>`).join('');
-    }
-
-    function speakInfirmiereReports() {
-        if (isSpeaking) return;
-        isSpeaking = true;
-        const text = document.getElementById('allReports').innerText;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'fr-CA';
-        utterance.onend = () => { isSpeaking = false; };
-        window.speechSynthesis.speak(utterance);
+        const html = reports.length ? reports.map(r => `<div class="report-item"><div class="report-time">${r.time}</div><div>${r.text}</div></div>`).join('') : '<p>Aucun rapport</p>';
+        document.getElementById('allReports').innerHTML = html;
     }
 
     function initAdminView() {
@@ -666,60 +503,40 @@
 
     function renderAdminDashboard() {
         const today = new Date().toLocaleDateString('fr-CA');
-        let html = `<h3>Récapitulatif du ${today}</h3>`;
+        let html = `<h3>Récapitulatif - ${today}</h3>`;
 
-        database.shifts.forEach(shift => {
-            html += `<div class="tableau-bord"><h3>${shift.name}</h3>`;
-
-            database.beneficiaries.forEach(benef => {
-                const adminReqs = getFromStorage(`patient_admin_${benef.id}`) || {};
-                const shiftData = getFromStorage(`patient_prepose_${benef.id}_${shift.id}`) || {};
-                const notes = getFromStorage(`patient_notes_${benef.id}_${shift.id}`) || '';
-
-                let completed = 0;
-                let total = 0;
-                let items = '';
-
-                database.careRequirements.forEach((care, idx) => {
-                    if (adminReqs[idx]) {
-                        total++;
-                        if (shiftData[idx]) {
-                            completed++;
-                            items += `<div>✅ ${care}</div>`;
-                        } else {
-                            items += `<div>❌ ${care}</div>`;
-                        }
-                    }
+        shifts.forEach(shift => {
+            html += `<div class="tableau-bord"><h4>${shift.name}</h4>`;
+            beneficiaries.forEach(benef => {
+                const adminReqs = getFromStorage(`admin_${benef.id}`) || {};
+                const shiftData = getFromStorage(`prepose_${benef.id}_${shift.id}`) || {};
+                const notes = getFromStorage(`notes_${benef.id}_${shift.id}`) || '';
+                let completed = 0, total = 0;
+                careRequirements.forEach((c, idx) => {
+                    if (adminReqs[idx]) { total++; if (shiftData[idx]) completed++; }
                 });
-
                 if (total > 0) {
-                    const percent = Math.round((completed / total) * 100);
-                    const rowClass = completed === total ? 'completed' : 'incomplete';
-                    html += `<div class="tableau-row ${rowClass}">
-                        <div><strong>${benef.name}</strong><br>Lit ${benef.bed}</div>
-                        <div>${completed}/${total} (${percent}%)</div>
-                        <div>${items}</div>
-                        <div>${notes ? `<strong>Notes:</strong> ${notes}` : ''}</div>
+                    const percent = Math.round((completed/total)*100);
+                    html += `<div class="tableau-row ${completed === total ? 'completed' : ''}">
+                        <strong>${benef.name}</strong> | Lit ${benef.bed} | ${completed}/${total} (${percent}%)${notes ? ` | Notes: ${notes}` : ''}
                     </div>`;
                 }
             });
-
-            html += `</div>`;
+            html += '</div>';
         });
 
         document.getElementById('adminDashboard').innerHTML = html;
     }
 
-    window.addEventListener('load', () => {
-        document.getElementById('userId').focus();
-    });
-
     window.onclick = function(event) {
-        const modal = document.getElementById('profileModal');
-        if (event.target == modal) {
+        if (event.target === document.getElementById('profileModal')) {
             closeProfileModal();
         }
     }
+
+    document.getElementById('userId').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') login();
+    });
 </script>
 
 </body>
