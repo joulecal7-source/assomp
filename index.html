@@ -17,12 +17,18 @@
         .btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
         .btn-fingerprint { width: 100%; padding: 15px; background: #059669; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px; margin-bottom: 15px; }
         .btn-fingerprint:hover { background: #047857; }
+        .btn-register { width: 100%; padding: 10px; background: #f59e0b; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; margin-top: 10px; }
         .divider { text-align: center; margin: 20px 0; color: #666; }
+        .message { padding: 10px; margin-bottom: 10px; border-radius: 6px; text-align: center; font-size: 12px; }
+        .message.success { background: #d1fae5; color: #065f46; }
+        .message.error { background: #fee2e2; color: #7f1d1d; }
+        .message.info { background: #dbeafe; color: #1e40af; }
         
         .hidden { display: none; }
         .app-container { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
         .sidebar { background: #1e293b; color: white; padding: 20px; overflow-y: auto; }
         .sidebar-logo { font-size: 18px; font-weight: 700; margin-bottom: 30px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px; text-align: center; }
+        .user-info { padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 20px; font-size: 12px; }
         .nav-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-size: 14px; }
         .nav-item.active { background: #2563eb; font-weight: 600; }
         .logout-btn { width: 100%; margin-top: 30px; padding: 12px; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
@@ -61,18 +67,20 @@
         
         .notes-section { margin-top: 25px; padding: 20px; background: #f9f9f9; border-radius: 8px; border-left: 4px solid #f59e0b; }
         .notes-section label { display: block; font-weight: 600; margin-bottom: 10px; }
-        .notes-section textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 80px; }
+        .notes-section textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 80px; resize: vertical; }
+        .save-notes-btn { width: 100%; padding: 12px; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px; }
+        .save-notes-btn:hover { background: #047857; }
         
         .tableau-bord { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .tableau-row { padding: 12px; background: #f9f9f9; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid #2563eb; }
+        .tableau-row { padding: 12px; background: #f9f9f9; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid #2563eb; font-size: 13px; }
         .tableau-row.completed { border-left-color: #059669; }
         
         .reports-section { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .report-item { padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; margin-bottom: 10px; }
-        .report-time { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .report-item { padding: 15px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; margin-bottom: 10px; font-size: 13px; }
+        .report-time { font-size: 11px; color: #666; margin-bottom: 5px; }
         
         .add-report-form { display: flex; gap: 10px; margin-top: 15px; }
-        .add-report-form input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .add-report-form input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
         .add-report-form button { padding: 10px 20px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         
         .print-btn { padding: 12px 20px; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 20px; }
@@ -94,7 +102,10 @@
         <h1>🏥 ASSOMP</h1>
         <p style="color: #666; margin-bottom: 30px; font-size: 14px;">Système de Suivi des Soins</p>
 
-        <button class="btn-fingerprint" onclick="authenticateFingerprint()">👆 Authentification Empreinte Digitale</button>
+        <div id="loginMessage"></div>
+
+        <button class="btn-fingerprint" id="btnFingerprint" onclick="authenticateWithFingerprint()">👆 Authentification Empreinte</button>
+        <button class="btn-register" id="btnRegister" onclick="registerFingerprint()">📝 Enregistrer Empreinte</button>
 
         <div class="divider">OU</div>
 
@@ -118,6 +129,7 @@
 <div id="appContainer" class="app-container hidden">
     <div class="sidebar">
         <div class="sidebar-logo">🏥 ASSOMP</div>
+        <div class="user-info" id="userInfo"></div>
         <div id="navMenu"></div>
         <button class="logout-btn" onclick="logout()">Déconnexion</button>
     </div>
@@ -218,6 +230,7 @@
         <div id="notesSection" class="notes-section" style="display:none;">
             <label>📝 Notes Observations:</label>
             <textarea id="patientNotes" placeholder="Observations..."></textarea>
+            <button class="save-notes-btn" onclick="saveNotes()">💾 Sauvegarder Notes</button>
         </div>
     </div>
 </div>
@@ -271,6 +284,20 @@
         { id: 'soir', name: 'Soir (22h-06h)' }
     ];
 
+    // PRE-REMPLIR LES SOINS ADMIN PAR DEFAUT
+    const defaultAdminRequirements = {
+        'B001': [true, true, true, true, false, false, true, false, true, false, true, true, false, false, false, true, false, true, true, false, false, true, true, true],
+        'B002': [false, true, false, true, false, true, false, false, false, true, true, false, true, true, false, false, true, false, false, true, true, false, false, false],
+        'B003': [true, false, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, true, false, false, true, false, true],
+        'B004': [false, false, true, true, false, false, true, false, false, true, false, false, false, false, true, true, false, true, false, false, true, false, true, false],
+        'B005': [true, true, false, false, true, false, false, false, true, false, true, false, false, true, false, false, true, false, false, true, false, false, false, true],
+        'B038': [true, true, true, true, false, false, true, false, true, false, true, true, false, false, false, true, false, true, true, false, false, true, true, true],
+        'B039': [false, true, false, true, false, true, false, false, false, true, true, false, true, true, false, false, true, false, false, true, true, false, false, false],
+        'B040': [true, false, true, false, true, false, false, true, false, false, false, true, true, false, true, false, false, false, true, false, false, true, false, true],
+        'B041': [false, false, true, true, false, false, true, false, false, true, false, false, false, false, true, true, false, true, false, false, true, false, true, false],
+        'B042': [true, true, false, false, true, false, false, false, true, false, true, false, false, true, false, false, true, false, false, true, false, false, false, true]
+    };
+
     function saveToStorage(key, value) {
         try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { }
     }
@@ -279,19 +306,98 @@
         try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : null; } catch (e) { return null; }
     }
 
-    function authenticateFingerprint() {
-        if (window.PublicKeyCredential) {
-            alert('👆 Utilisez votre empreinte digitale sur votre appareil');
-            // Simulation - en production il faudrait WebAuthn complet
+    function showMessage(message, type = 'info') {
+        const msgDiv = document.getElementById('loginMessage');
+        msgDiv.textContent = message;
+        msgDiv.className = `message ${type}`;
+        setTimeout(() => { msgDiv.textContent = ''; }, 4000);
+    }
+
+    async function registerFingerprint() {
+        const userId = document.getElementById('userId').value.trim();
+        if (!userId || !users[userId]) {
+            showMessage('❌ Matricule invalide', 'error');
             return;
         }
-        alert('Empreinte digitale non supportée sur ce navigateur');
+
+        if (!window.PublicKeyCredential) {
+            showMessage('❌ Empreinte digitale non supportée', 'error');
+            return;
+        }
+
+        try {
+            showMessage('📝 Enregistrement de l\'empreinte...', 'info');
+            const challenge = crypto.getRandomValues(new Uint8Array(32));
+            
+            const credential = await navigator.credentials.create({
+                publicKey: {
+                    challenge: challenge,
+                    rp: { name: 'ASSOMP' },
+                    user: {
+                        id: new TextEncoder().encode(userId),
+                        name: userId,
+                        displayName: users[userId].name
+                    },
+                    pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+                    authenticatorSelection: { authenticatorAttachment: 'platform' }
+                }
+            });
+
+            if (credential) {
+                saveToStorage(`fingerprint_${userId}`, {
+                    credentialId: Array.from(new Uint8Array(credential.id)),
+                    userId: userId
+                });
+                showMessage('✅ Empreinte enregistrée! Vous pouvez maintenant utiliser l\'authentification rapide', 'success');
+            }
+        } catch (error) {
+            showMessage('⚠️ Erreur: ' + error.message, 'error');
+        }
+    }
+
+    async function authenticateWithFingerprint() {
+        if (!window.PublicKeyCredential) {
+            showMessage('❌ Empreinte digitale non supportée', 'error');
+            return;
+        }
+
+        try {
+            showMessage('👆 Veuillez utiliser votre empreinte digitale...', 'info');
+            
+            const assertion = await navigator.credentials.get({
+                publicKey: {
+                    challenge: crypto.getRandomValues(new Uint8Array(32)),
+                    timeout: 60000,
+                    userVerification: 'preferred'
+                }
+            });
+
+            if (assertion) {
+                const allFingerprints = localStorage;
+                for (let key in allFingerprints) {
+                    if (key.startsWith('fingerprint_')) {
+                        const userId = key.replace('fingerprint_', '');
+                        currentUser = { id: userId, ...users[userId] };
+                        document.getElementById('loginPage').classList.add('hidden');
+                        document.getElementById('appContainer').classList.remove('hidden');
+                        
+                        if (users[userId].role === 'prepose') initPreposeView();
+                        else if (users[userId].role === 'infirmiere') initInfirmiereView();
+                        else if (users[userId].role === 'admin') initAdminView();
+                        return;
+                    }
+                }
+                showMessage('⚠️ Aucune empreinte enregistrée', 'error');
+            }
+        } catch (error) {
+            showMessage('⚠️ Authentification échouée: ' + error.message, 'error');
+        }
     }
 
     function login() {
         const userId = document.getElementById('userId').value.trim();
         if (!userId || !users[userId]) {
-            alert('❌ Matricule invalide');
+            showMessage('❌ Matricule invalide', 'error');
             return;
         }
 
@@ -299,6 +405,15 @@
         currentUser = { id: userId, ...user };
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('appContainer').classList.remove('hidden');
+
+        // Initialiser les soins ADMIN par défaut
+        if (!getFromStorage(`admin_${currentModalPatientId}`)) {
+            beneficiaries.forEach(benef => {
+                if (!getFromStorage(`admin_${benef.id}`)) {
+                    saveToStorage(`admin_${benef.id}`, defaultAdminRequirements[benef.id] || {});
+                }
+            });
+        }
 
         if (user.role === 'prepose') initPreposeView();
         else if (user.role === 'infirmiere') initInfirmiereView();
@@ -311,10 +426,12 @@
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('appContainer').classList.add('hidden');
             document.getElementById('userId').value = '';
+            document.getElementById('loginMessage').textContent = '';
         }
     }
 
     function initPreposeView() {
+        document.getElementById('userInfo').innerHTML = `👤 ${currentUser.name}<br><small>${currentUser.id}</small>`;
         const navHTML = `
             <div class="nav-item active" onclick="showRapportPage()">📋 Rapport</div>
             <div class="nav-item" onclick="showPreposeePage()">📝 Soins</div>
@@ -350,10 +467,10 @@
 
         let html = '<h3>À vérifier</h3>';
         beneficiaries.forEach(benef => {
-            const adminReqs = getFromStorage(`admin_${benef.id}`) || {};
+            const adminReqs = getFromStorage(`admin_${benef.id}`) || defaultAdminRequirements[benef.id] || {};
             const prevShiftData = getFromStorage(`prepose_${benef.id}_${prevShift}`) || {};
             let incomplete = false;
-            beneficiaries.forEach((b, idx) => {
+            careRequirements.forEach((c, idx) => {
                 if (adminReqs[idx] && !prevShiftData[idx]) incomplete = true;
             });
             if (incomplete) html += `<div style="margin: 10px 0;">• ${benef.name} (Lit ${benef.bed})</div>`;
@@ -417,7 +534,7 @@
     function openProfileModal(benefId) {
         currentModalPatientId = benefId;
         const benef = beneficiaries.find(b => b.id === benefId);
-        const adminReqs = getFromStorage(`admin_${benefId}`) || {};
+        const adminReqs = getFromStorage(`admin_${benefId}`) || defaultAdminRequirements[benefId] || {};
         const preposeData = getFromStorage(`prepose_${benefId}_${currentShift}`) || {};
         const notes = getFromStorage(`notes_${benefId}_${currentShift}`) || '';
 
@@ -440,7 +557,7 @@
     }
 
     function updatePrepose(benefId, idx) {
-        const checkbox = document.querySelector(`[onchange*="${benefId}"][onchange*="${idx}"]`);
+        const checkbox = document.querySelector(`input[onchange*="${benefId}"][onchange*="${idx}"]`);
         const data = getFromStorage(`prepose_${benefId}_${currentShift}`) || {};
         data[idx] = checkbox.checked;
         const now = new Date();
@@ -449,14 +566,23 @@
         saveToStorage(`prepose_${benefId}_${currentShift}`, data);
     }
 
+    function saveNotes() {
+        if (currentModalPatientId) {
+            const notes = document.getElementById('patientNotes').value;
+            saveToStorage(`notes_${currentModalPatientId}_${currentShift}`, notes);
+            showMessage('✅ Notes sauvegardées!', 'success');
+        }
+    }
+
     function closeProfileModal() {
         if (currentModalPatientId) {
-            saveToStorage(`notes_${currentModalPatientId}_${currentShift}`, document.getElementById('patientNotes').value);
+            saveNotes();
         }
         document.getElementById('profileModal').classList.remove('active');
     }
 
     function initInfirmiereView() {
+        document.getElementById('userInfo').innerHTML = `👩‍⚕️ ${currentUser.name}<br><small>${currentUser.id}</small>`;
         document.getElementById('navMenu').innerHTML = '<div class="nav-item active" onclick="showInfirmierePage()">📝 Rapports</div>';
         document.getElementById('infirmiereName').textContent = currentUser.name;
         showInfirmierePage();
@@ -481,6 +607,7 @@
         input.value = '';
         renderAllReports();
         renderReports();
+        showMessage('✅ Rapport ajouté!', 'success');
     }
 
     function renderAllReports() {
@@ -490,6 +617,7 @@
     }
 
     function initAdminView() {
+        document.getElementById('userInfo').innerHTML = `👨‍💼 ${currentUser.name}<br><small>${currentUser.id}</small>`;
         document.getElementById('navMenu').innerHTML = '<div class="nav-item active" onclick="showAdminPage()">📊 Tableau Bord</div>';
         document.getElementById('adminName').textContent = currentUser.name;
         showAdminPage();
@@ -508,7 +636,7 @@
         shifts.forEach(shift => {
             html += `<div class="tableau-bord"><h4>${shift.name}</h4>`;
             beneficiaries.forEach(benef => {
-                const adminReqs = getFromStorage(`admin_${benef.id}`) || {};
+                const adminReqs = getFromStorage(`admin_${benef.id}`) || defaultAdminRequirements[benef.id] || {};
                 const shiftData = getFromStorage(`prepose_${benef.id}_${shift.id}`) || {};
                 const notes = getFromStorage(`notes_${benef.id}_${shift.id}`) || '';
                 let completed = 0, total = 0;
@@ -536,6 +664,14 @@
 
     document.getElementById('userId').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') login();
+    });
+
+    window.addEventListener('load', function() {
+        if (!window.PublicKeyCredential) {
+            document.getElementById('btnFingerprint').disabled = true;
+            document.getElementById('btnRegister').disabled = true;
+            document.getElementById('btnFingerprint').textContent = '❌ Non supporté';
+        }
     });
 </script>
 
